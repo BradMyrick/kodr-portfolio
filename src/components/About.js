@@ -168,10 +168,10 @@ const About = () => {
               <div className="col-sm-9 col-md-9 col-xl-10">
                 <div className="rb-right">
                   <h6>CTO</h6>
-                  <label>Tacvue | Remote | Oct 2021 - Nov 2021</label>
+                  <label>Tacvue | Remote | Oct 2021 - Nov 2022</label>
                   <div className="rb-time">Full Time</div>
                   <p>
-                    As the CTO of Tacvue, I am responsible for the development
+                    As the CTO of Tacvue, I was responsible for the development
                     of the Tacvue platform and the management of the Tacvue
                     engineering team. We were a WEB3 Creatives platform
                     specializing in NFTs and Metaverse development.
