@@ -61,7 +61,7 @@ const Services = () => {
               <div className="feature-content media-body">
                 <h5>Full Sail University Graduate</h5>
                 <p>
-                  Graduated Salutatorian with a Bachelor's in Computer Science from Full Sail University, demonstrating a strong foundation in software engineering principles and practices.
+                  Graduated Salutatorian with a Bachelor&apos;s in Computer Science from Full Sail University, demonstrating a strong foundation in software engineering principles and practices.
                 </p>
               </div>
             </div>

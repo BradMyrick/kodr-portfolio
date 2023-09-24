@@ -24,13 +24,13 @@ const IndexParticles = () => {
             <div className="row full-screen align-items-center">
               <div className="col-lg-6">
                 <div className="type-box">
-                  <h6> GM, I'm</h6>
-                  <h1 className="font-alt">Brad 'kodr.eth' Myrick</h1>
+                  <h6> GM, I&apos;m</h6>
+                  <h1 className="font-alt">Brad &apos;kodr.eth&apos; Myrick</h1>
                   <p className="lead">
                    <TypingAnimation />
                   </p>
                   <p className="desc">
-                    I am a seasoned software engineer with a background in Web3, Blockchain, and Systems Architecture. My engineering journey has led me to develop cutting-edge solutions for some of the world's most ambitious businesses. Contact me to bring your ideas to life and push the boundaries of what's possible.</p>
+                    I am a seasoned software engineer with a background in Web3, Blockchain, and Systems Architecture. My engineering journey has led me to develop cutting-edge solutions for some of the world&apos;s most ambitious businesses. Contact me to bring your ideas to life and push the boundaries of what&apos;s possible.</p>
                   <div className="btn-bar">
                     <a className="px-btn px-btn-theme" href="#contactme">
                       Contact Me

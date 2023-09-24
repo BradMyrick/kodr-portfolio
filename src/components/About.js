@@ -23,10 +23,10 @@ const About = () => {
               </div>
               <div className="about-text">
                 <h3>
-                {`I'm`} a globe-trotting software engineer and OIF veteran.
+                {`I&apos;m`} a globe-trotting software engineer and OIF veteran.
                 </h3>
                 <p>
-                As a former Sergeant in the US Army, I bring discipline and tenacity to my work, and graduated Salutatorian from Full Sail University with a Bachelor's in Computer Science. 
+                As a former Sergeant in the US Army, I bring discipline and tenacity to my work, and graduated Salutatorian from Full Sail University with a Bachelor&apos;s in Computer Science. 
                 My expertise spans from building ETLs for machine learning teams to developing full-stack Web3 projects.
 
                 </p>
@@ -88,7 +88,7 @@ const About = () => {
             <div className="skills-box">
               <h3>My skills</h3>
               <p>
-                {`I'm`} a For-hire Software Engineer with a passion for building
+                {`I&apos;m`} a For-hire Software Engineer with a passion for building
                 cutting-edge solutions to complex problems.
               </p>
               <div className="skill-lt">
@@ -149,7 +149,7 @@ const About = () => {
                   <div className="rb-time">Full Time</div>
                   <p>
                     At Trugard Labs, I am responsible for the development of
-                    Trugard's core product, a machine learning platform for
+                    Trugard&apos;s core product, a machine learning platform for
                     detecting and preventing fraud on various blockchains.
                   </p>
                 </div>
@@ -193,7 +193,7 @@ const About = () => {
                   <p>
                     As an internship program participant, I was responsible for
                     developing and maintaining the Android application for
-                    Echelon's line of smart exercise equipment.
+                    Echelon&apos;s line of smart exercise equipment.
                   </p>
                 </div>
               </div>
