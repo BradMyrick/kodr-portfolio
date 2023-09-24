@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 const About = () => {
   return (
     <section
@@ -11,7 +13,7 @@ const About = () => {
             <div className="about-me">
               <div className="img">
                 <div className="img-in">
-                  <img src="static/img/kld1.png" title="" alt="" />
+                  <img src="/static/img/kld1.png" title="" alt="" />
                 </div>
               </div>
             </div>
@@ -23,7 +25,7 @@ const About = () => {
               </div>
               <div className="about-text">
                 <h3>
-                {`I&apos;m`} a globe-trotting software engineer and OIF veteran.
+                {`I'm`} a globe-trotting software engineer and OIF veteran.
                 </h3>
                 <p>
                 As a former Sergeant in the US Army, I bring discipline and tenacity to my work, and graduated Salutatorian from Full Sail University with a Bachelor&apos;s in Computer Science. 
@@ -88,7 +90,7 @@ const About = () => {
             <div className="skills-box">
               <h3>My skills</h3>
               <p>
-                {`I&apos;m`} a For-hire Software Engineer with a passion for building
+                {`I'm`} a For-hire Software Engineer with a passion for building
                 cutting-edge solutions to complex problems.
               </p>
               <div className="skill-lt">

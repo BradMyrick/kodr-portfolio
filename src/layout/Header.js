@@ -1,13 +1,7 @@
 import Link from "next/link";
 import { Fragment, useEffect, useState } from "react";
-import { activeSection } from "../utilits";
 const Header = ({ blog }) => {
   const [sideBarToggle, setSideBarToggle] = useState(false);
-  useEffect(() => {
-    if (!blog) {
-      activeSection();
-    }
-  }, []);
   return (
     <Fragment>
       <div className="mob-header">
