@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
+import { usePathname } from 'next/navigation';
 import { useSidebarCollapsed, useAppStore } from '@/stores/useAppStore';
 import { cn } from '@/utils';
 
@@ -50,7 +50,7 @@ const SidebarItem: React.FC<SidebarItemProps> = ({
 };
 
 const Sidebar: React.FC = () => {
-  const router = useRouter();
+  const pathname = usePathname();
   const isCollapsed = useSidebarCollapsed();
   const { setSidebarCollapsed } = useAppStore();
 
@@ -161,7 +161,7 @@ const Sidebar: React.FC = () => {
               href={item.href}
               icon={item.icon}
               label={item.label}
-              isActive={router.pathname === item.href}
+              isActive={pathname === item.href}
               isCollapsed={isCollapsed}
             />
           ))}
