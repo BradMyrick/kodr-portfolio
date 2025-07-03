@@ -4,7 +4,6 @@ import React from 'react';
 import Link from 'next/link';
 import Button from '@/components/ui/Button';
 import Card from '@/components/ui/Card';
-import Input from '@/components/ui/Input';
 import Avatar from '@/components/ui/Avatar';
 
 const LandingPage = () => {

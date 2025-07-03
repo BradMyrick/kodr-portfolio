@@ -43,11 +43,12 @@ export default function SettingsPage() {
         {/* Settings Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {settings.map((setting, i) => (
-            <Card 
+            <div 
               key={i} 
-              className="hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer border-0 bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900"
+              className="hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer"
               onClick={() => alert(`${setting.title} is coming soon!`)}
             >
+              <Card className="border-0 bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900">
               <Card.Content className="p-6">
                 <div className={`w-16 h-16 bg-gradient-to-br ${setting.color} rounded-2xl flex items-center justify-center mb-4 text-2xl shadow-lg`}>
                   {setting.icon}
@@ -63,6 +64,7 @@ export default function SettingsPage() {
                 </Button>
               </Card.Content>
             </Card>
+            </div>
           ))}
         </div>
 

@@ -97,7 +97,7 @@ export default function ResourcesPage() {
           {categories.map((category) => (
             <Button
               key={category.id}
-              variant={selectedCategory === category.id ? 'default' : 'outline'}
+              variant={selectedCategory === category.id ? 'primary' : 'outline'}
               size="sm"
               onClick={() => setSelectedCategory(category.id)}
               className="flex items-center gap-2"
@@ -113,11 +113,12 @@ export default function ResourcesPage() {
         {/* Resources Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredResources.map((resource, i) => (
-            <Card 
+            <div 
               key={i} 
-              className="hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer border-0 bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900"
+              className="hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer"
               onClick={() => handleComingSoon(resource.title)}
             >
+              <Card className="border-0 bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900">
               <Card.Content className="p-6">
                 <div className={`w-16 h-16 bg-gradient-to-br ${resource.color} rounded-2xl flex items-center justify-center mb-4 text-2xl shadow-lg`}>
                   {resource.icon}
@@ -138,6 +139,7 @@ export default function ResourcesPage() {
                 </div>
               </Card.Content>
             </Card>
+            </div>
           ))}
         </div>
 
