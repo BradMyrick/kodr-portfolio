@@ -1,9 +1,9 @@
 ## Software Engineering Design Document  
-**Product Name:** Concordia.io  
+**Product Name:** Kodr.pro  
 **Tagline:** Sync. Build. Succeed.
 
 ### 1. **Overview**
-Concordia.io is a next-generation innovation hub enabling real-time, AI-powered collaboration for distributed teams. The platform empowers creators, engineers, and organizations to ideate, prototype, and build together—seamlessly and securely.
+Kodr.pro is a next-generation innovation hub enabling real-time, AI-powered collaboration for distributed teams. The platform empowers creators, engineers, and organizations to ideate, prototype, and build together—seamlessly and securely.
 
 ### 2. **Objectives & Goals**
 - **Seamless Collaboration:** Real-time ideation, project management, and communication.

@@ -34,7 +34,7 @@ export default function LoginPage() {
       await new Promise(resolve => setTimeout(resolve, 1000));
 
       // Mock authentication - replace with actual authentication logic
-      if (formData.email === 'demo@concordia.io' && formData.password === 'Password123!') {
+      if (formData.email === 'demo@kodr.pro' && formData.password === 'Password123!') {
         const mockUser: User = {
           id: generateId(),
           name: 'Demo User',
@@ -112,11 +112,11 @@ export default function LoginPage() {
         <div className="text-center">
           <Link href="/" className="inline-block">
             <div className="mx-auto h-12 w-12 bg-blue-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-lg">C</span>
+              <span className="text-white font-bold text-lg">K</span>
             </div>
           </Link>
           <h2 className="mt-6 text-3xl font-extrabold text-gray-900 dark:text-white">
-            Sign in to Concordia.io
+            Sign in to Kodr.pro
           </h2>
           <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
             Or{' '}
@@ -201,7 +201,7 @@ export default function LoginPage() {
               Demo Account
             </h3>
             <p className="mt-1 text-sm text-blue-700 dark:text-blue-300">
-              Email: demo@concordia.io
+              Email: demo@kodr.pro
               <br />
               Password: Password123!
             </p>

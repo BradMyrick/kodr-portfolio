@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAppStore, useTheme, useUser } from '@/stores/useAppStore';
 import { ToastContainer } from '@/components/ui/Toast';
 import Navbar from '@/components/layout/Navbar';
@@ -18,9 +18,36 @@ export default function LayoutWrapper({
   requireAuth = false,
   showSidebar = false,
 }: LayoutWrapperProps) {
-  const theme = useTheme();
-  const user = useUser();
-  const { notifications, removeNotification } = useAppStore();
+  const [isHydrated, setIsHydrated] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+  
+  // Handle mounting first
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+  
+  // Handle store hydration after mounting
+  useEffect(() => {
+    if (!isMounted) return;
+    
+    const timeout = setTimeout(() => {
+      try {
+        useAppStore.persist.rehydrate();
+        setIsHydrated(true);
+      } catch (error) {
+        console.error('Hydration error:', error);
+        setIsHydrated(true); // Still show the UI even if hydration fails
+      }
+    }, 100);
+    
+    return () => clearTimeout(timeout);
+  }, [isMounted]);
+  
+  // Get state only after hydration
+  const theme = isHydrated ? useTheme() : 'light';
+  const user = isHydrated ? useUser() : null;
+  const notifications = isHydrated ? useAppStore((state) => state.notifications) : [];
+  const removeNotification = useAppStore((state) => state.removeNotification);
 
   // Apply theme to document
   useEffect(() => {
@@ -31,6 +58,15 @@ export default function LayoutWrapper({
       root.classList.remove('dark');
     }
   }, [theme]);
+
+  // Show loading while hydrating
+  if (!isHydrated) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
 
   // Don't render layout if auth is required but user is not authenticated
   if (requireAuth && !user) {

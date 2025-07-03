@@ -1,7 +1,7 @@
 {
-  "name": "concordia",
+  "name": "kodr-pro",
   "version": "0.1.0",
-  "description": "Concordia.io - Sync. Build. Succeed. - A next-generation innovation hub for real-time, AI-powered collaboration",
+  "description": "Kodr.pro - Sync. Build. Succeed. - A next-generation innovation hub for real-time, AI-powered collaboration",
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",

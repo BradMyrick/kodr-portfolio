@@ -5,6 +5,7 @@ import { useAppStore, useTheme, useUser, useUnreadNotifications } from '@/stores
 import Button from '@/components/ui/Button';
 import Avatar from '@/components/ui/Avatar';
 import Input from '@/components/ui/Input';
+import ClientOnly from '@/components/ClientOnly';
 
 const Navbar: React.FC = () => {
   const router = useRouter();
@@ -33,7 +34,7 @@ const Navbar: React.FC = () => {
     try {
       // Clear any sensitive data
       sessionStorage.clear();
-      localStorage.removeItem('concordia-storage');
+      localStorage.removeItem('kodr-storage');
       
       logout();
       setShowUserMenu(false);
@@ -78,10 +79,10 @@ const Navbar: React.FC = () => {
             {/* Logo */}
             <Link href="/" className="flex items-center space-x-2">
               <div className="h-8 w-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">C</span>
+                <span className="text-white font-bold text-sm">K</span>
               </div>
               <span className="font-semibold text-gray-900 dark:text-white text-lg">
-                Concordia.io
+                Kodr.pro
               </span>
             </Link>
           </div>
@@ -121,94 +122,96 @@ const Navbar: React.FC = () => {
               )}
             </Button>
 
-            {user ? (
-              <>
-                {/* Notifications */}
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="relative"
-                  onClick={() => router.push('/notifications')}
-                  aria-label="Notifications"
-                >
-                  <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-5 5v-5zM10.5 3.5a6 6 0 0 1 6 6v2l1.5 1.5H3L4.5 11.5v-2a6 6 0 0 1 6-6z" />
-                  </svg>
-                  {unreadNotifications.length > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                      {unreadNotifications.length > 9 ? '9+' : unreadNotifications.length}
-                    </span>
-                  )}
-                </Button>
-
-                {/* User Menu */}
-                <div className="relative" ref={userMenuRef}>
+            <ClientOnly>
+              {user ? (
+                <>
+                  {/* Notifications */}
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => setShowUserMenu(!showUserMenu)}
-                    className="flex items-center space-x-2"
-                    aria-label="User menu"
+                    className="relative"
+                    onClick={() => router.push('/notifications')}
+                    aria-label="Notifications"
                   >
-                    <Avatar
-                      src={user.avatar}
-                      name={user.name}
-                      size="sm"
-                      showOnlineStatus={false}
-                    />
-                    <span className="hidden md:block text-sm font-medium text-gray-700 dark:text-gray-300">
-                      {user.name}
-                    </span>
-                    <svg className="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-5 5v-5zM10.5 3.5a6 6 0 0 1 6 6v2l1.5 1.5H3L4.5 11.5v-2a6 6 0 0 1 6-6z" />
                     </svg>
+                    {unreadNotifications.length > 0 && (
+                      <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                        {unreadNotifications.length > 9 ? '9+' : unreadNotifications.length}
+                      </span>
+                    )}
                   </Button>
 
-                  {/* Dropdown Menu */}
-                  {showUserMenu && (
-                    <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-700 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                      <div className="py-1">
-                        <Link
-                          href="/profile"
-                          className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600"
-                          onClick={() => setShowUserMenu(false)}
-                        >
-                          Profile
-                        </Link>
-                        <Link
-                          href="/settings"
-                          className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600"
-                          onClick={() => setShowUserMenu(false)}
-                        >
-                          Settings
-                        </Link>
-                        <hr className="my-1 border-gray-200 dark:border-gray-600" />
-                        <button
-                          onClick={handleLogout}
-                          className="block w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-600"
-                        >
-                          Sign Out
-                        </button>
+                  {/* User Menu */}
+                  <div className="relative" ref={userMenuRef}>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setShowUserMenu(!showUserMenu)}
+                      className="flex items-center space-x-2"
+                      aria-label="User menu"
+                    >
+                      <Avatar
+                        src={user.avatar}
+                        name={user.name}
+                        size="sm"
+                        showOnlineStatus={false}
+                      />
+                      <span className="hidden md:block text-sm font-medium text-gray-700 dark:text-gray-300">
+                        {user.name}
+                      </span>
+                      <svg className="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </Button>
+
+                    {/* Dropdown Menu */}
+                    {showUserMenu && (
+                      <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-700 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                        <div className="py-1">
+                          <Link
+                            href="/profile"
+                            className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600"
+                            onClick={() => setShowUserMenu(false)}
+                          >
+                            Profile
+                          </Link>
+                          <Link
+                            href="/settings"
+                            className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600"
+                            onClick={() => setShowUserMenu(false)}
+                          >
+                            Settings
+                          </Link>
+                          <hr className="my-1 border-gray-200 dark:border-gray-600" />
+                          <button
+                            onClick={handleLogout}
+                            className="block w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-600"
+                          >
+                            Sign Out
+                          </button>
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    )}
+                  </div>
+                </>
+              ) : (
+                // Authentication Buttons
+                <div className="flex items-center space-x-2">
+                  <Link href="/auth/login">
+                    <Button variant="ghost" size="sm">
+                      Sign In
+                    </Button>
+                  </Link>
+                  <Link href="/auth/register">
+                    <Button size="sm">
+                      Get Started
+                    </Button>
+                  </Link>
                 </div>
-              </>
-            ) : (
-              // Authentication Buttons
-              <div className="flex items-center space-x-2">
-                <Link href="/auth/login">
-                  <Button variant="ghost" size="sm">
-                    Sign In
-                  </Button>
-                </Link>
-                <Link href="/auth/register">
-                  <Button size="sm">
-                    Get Started
-                  </Button>
-                </Link>
-              </div>
-            )}
+              )}
+            </ClientOnly>
           </div>
         </div>
       </div>
@@ -217,3 +220,4 @@ const Navbar: React.FC = () => {
 };
 
 export default Navbar;
+

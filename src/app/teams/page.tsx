@@ -32,9 +32,9 @@ export default function TeamsPage() {
       description: 'Core product development team working on new features and improvements',
       members: [
         { user: user!, role: 'owner', joinedAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString() },
-        { user: { ...user!, id: '2', name: 'Sarah Chen', email: 'sarah@concordia.io' }, role: 'admin', joinedAt: new Date(Date.now() - 25 * 24 * 60 * 60 * 1000).toISOString() },
-        { user: { ...user!, id: '3', name: 'Mike Johnson', email: 'mike@concordia.io' }, role: 'member', joinedAt: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toISOString() },
-        { user: { ...user!, id: '4', name: 'Emma Davis', email: 'emma@concordia.io' }, role: 'member', joinedAt: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString() },
+{ user: { ...user!, id: '2', name: 'Sarah Chen', email: 'sarah@kodr.pro' }, role: 'admin', joinedAt: new Date(Date.now() - 25 * 24 * 60 * 60 * 1000).toISOString() },
+{ user: { ...user!, id: '3', name: 'Mike Johnson', email: 'mike@kodr.pro' }, role: 'member', joinedAt: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toISOString() },
+{ user: { ...user!, id: '4', name: 'Emma Davis', email: 'emma@kodr.pro' }, role: 'member', joinedAt: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString() },
       ],
       projects: ['AI-Powered Chat App', 'Smart Home Dashboard'],
       createdAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
@@ -46,8 +46,8 @@ export default function TeamsPage() {
       description: 'Maintaining and evolving our design system and component library',
       members: [
         { user: user!, role: 'admin', joinedAt: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toISOString() },
-        { user: { ...user!, id: '5', name: 'Alex Rivera', email: 'alex@concordia.io' }, role: 'owner', joinedAt: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toISOString() },
-        { user: { ...user!, id: '6', name: 'Lisa Park', email: 'lisa@concordia.io' }, role: 'member', joinedAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString() },
+{ user: { ...user!, id: '5', name: 'Alex Rivera', email: 'alex@kodr.pro' }, role: 'owner', joinedAt: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toISOString() },
+{ user: { ...user!, id: '6', name: 'Lisa Park', email: 'lisa@kodr.pro' }, role: 'member', joinedAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString() },
       ],
       projects: ['Component Library', 'Design Tokens'],
       createdAt: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toISOString(),

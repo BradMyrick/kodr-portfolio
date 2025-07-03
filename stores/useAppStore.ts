@@ -52,7 +52,7 @@ const initialState = {
   isProjectsLoading: false,
 };
 
-export const useAppStore = create<AppState>()(
+export const useAppStore = create<AppState>()(  
   persist(
     (set, get) => ({
       ...initialState,
@@ -135,7 +135,7 @@ export const useAppStore = create<AppState>()(
       reset: () => set(initialState),
     }),
     {
-      name: 'concordia-storage',
+      name: 'kodr-storage',
       partialize: (state) => ({
         user: state.user,
         isAuthenticated: state.isAuthenticated,
@@ -144,20 +144,22 @@ export const useAppStore = create<AppState>()(
         projects: state.projects,
         currentProject: state.currentProject,
       }),
+      skipHydration: false,
     }
   )
 );
 
-// Selectors for better performance
+// Selectors for better performance with memoization
 export const useUser = () => useAppStore((state) => state.user);
 export const useIsAuthenticated = () => useAppStore((state) => state.isAuthenticated);
 export const useTheme = () => useAppStore((state) => state.theme);
 export const useProjects = () => useAppStore((state) => state.projects);
 export const useCurrentProject = () => useAppStore((state) => state.currentProject);
 export const useNotifications = () => useAppStore((state) => state.notifications);
-export const useUnreadNotifications = () => useAppStore((state) => 
-  state.notifications.filter(n => !n.read)
-);
+export const useUnreadNotifications = () => {
+  const notifications = useAppStore((state) => state.notifications);
+  return notifications.filter(n => !n.read);
+};
 export const useSidebarCollapsed = () => useAppStore((state) => state.sidebarCollapsed);
 export const useIsLoading = () => useAppStore((state) => state.isLoading);
 export const useIsProjectsLoading = () => useAppStore((state) => state.isProjectsLoading);
