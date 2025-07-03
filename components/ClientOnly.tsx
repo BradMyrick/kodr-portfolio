@@ -18,7 +18,7 @@ const ClientOnly: React.FC<ClientOnlyProps> = ({
   }, []);
 
   if (!hasMounted) {
-    return <>{fallback}</>;
+    return fallback ? <>{fallback}</> : null;
   }
 
   return <>{children}</>;

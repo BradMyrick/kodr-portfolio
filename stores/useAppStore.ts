@@ -144,7 +144,7 @@ export const useAppStore = create<AppState>()(
         projects: state.projects,
         currentProject: state.currentProject,
       }),
-      skipHydration: false,
+      skipHydration: true,
     }
   )
 );

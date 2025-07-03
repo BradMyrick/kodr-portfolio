@@ -19,17 +19,15 @@ export default function LayoutWrapper({
   showSidebar = false,
 }: LayoutWrapperProps) {
   const [isHydrated, setIsHydrated] = useState(false);
-  const [isMounted, setIsMounted] = useState(false);
   
-  // Handle mounting first
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
+  // Always call hooks - no conditional hook calls
+  const theme = useTheme();
+  const user = useUser();
+  const notifications = useAppStore((state) => state.notifications);
+  const removeNotification = useAppStore((state) => state.removeNotification);
   
-  // Handle store hydration after mounting
+  // Handle store hydration
   useEffect(() => {
-    if (!isMounted) return;
-    
     const timeout = setTimeout(() => {
       try {
         useAppStore.persist.rehydrate();
@@ -41,13 +39,7 @@ export default function LayoutWrapper({
     }, 100);
     
     return () => clearTimeout(timeout);
-  }, [isMounted]);
-  
-  // Get state only after hydration
-  const theme = isHydrated ? useTheme() : 'light';
-  const user = isHydrated ? useUser() : null;
-  const notifications = isHydrated ? useAppStore((state) => state.notifications) : [];
-  const removeNotification = useAppStore((state) => state.removeNotification);
+  }, []);
 
   // Apply theme to document
   useEffect(() => {
