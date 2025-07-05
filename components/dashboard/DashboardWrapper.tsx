@@ -1,8 +1,10 @@
 'use client';
 
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { useUser, useProjects, useAppStore } from '@/stores/useAppStore';
-import Layout from '@/components/layout/Layout';
+import { ToastContainer } from '@/components/ui/Toast';
+import Navbar from '@/components/layout/Navbar';
 import DashboardHome from './views/DashboardHome';
 import ProjectsView from './views/ProjectsView';
 import IdeationView from './views/IdeationView';
@@ -14,12 +16,26 @@ import DashboardNavigation from './DashboardNavigation';
 import { DashboardView, NavigationItem } from '@/src/types/dashboard';
 
 const DashboardWrapper: React.FC = () => {
+  const router = useRouter();
   const [activeView, setActiveView] = useState<DashboardView>('home');
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [isHydrated, setIsHydrated] = useState(false);
   
   const user = useUser();
   const projects = useProjects();
-  const { notifications } = useAppStore();
+  const { notifications, removeNotification } = useAppStore();
+
+  // Handle hydration
+  useEffect(() => {
+    setIsHydrated(true);
+  }, []);
+
+  // Redirect to login if not authenticated after hydration
+  useEffect(() => {
+    if (isHydrated && !user) {
+      router.push('/auth/login');
+    }
+  }, [isHydrated, user, router]);
 
   // Memoized navigation items to prevent unnecessary re-renders
   const navigationItems: NavigationItem[] = useMemo(() => [
@@ -132,28 +148,46 @@ const DashboardWrapper: React.FC = () => {
     }
   }, [activeView, isTransitioning, handleViewChange]);
 
-  // Show loading if user is not available yet
-  if (!user) {
+  // Show loading if not hydrated yet or if user is not available
+  if (!isHydrated || !user) {
     return (
-      <Layout requireAuth showSidebar>
-        <div className="p-6 max-w-7xl mx-auto">
-          <div className="animate-pulse">
-            <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/4 mb-4"></div>
-            <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2 mb-8"></div>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-              {[...Array(4)].map((_, i) => (
-                <div key={i} className="h-24 bg-gray-200 dark:bg-gray-700 rounded"></div>
-              ))}
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+        <Navbar />
+        <div className="flex" style={{ height: 'calc(100vh - 4rem)' }}>
+          <div className="w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700">
+            <div className="p-6">
+              <div className="animate-pulse">
+                <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-4"></div>
+                <div className="space-y-3">
+                  {[...Array(6)].map((_, i) => (
+                    <div key={i} className="h-10 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="flex-1 p-6">
+            <div className="animate-pulse">
+              <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/4 mb-4"></div>
+              <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2 mb-8"></div>
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                {[...Array(4)].map((_, i) => (
+                  <div key={i} className="h-24 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
-      </Layout>
+      </div>
     );
   }
 
   return (
-    <Layout requireAuth showSidebar>
-      <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      {/* Top Navbar */}
+      <Navbar />
+      
+      <div className="flex" style={{ height: 'calc(100vh - 4rem)' }}>
         {/* Dashboard Navigation */}
         <DashboardNavigation
           items={navigationItems}
@@ -170,7 +204,13 @@ const DashboardWrapper: React.FC = () => {
           </div>
         </main>
       </div>
-    </Layout>
+
+      {/* Toast Notifications */}
+      <ToastContainer
+        notifications={notifications}
+        onRemove={removeNotification}
+      />
+    </div>
   );
 };
 
