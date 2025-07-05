@@ -5,7 +5,7 @@ import { useUser, useAppStore } from '@/stores/useAppStore';
 import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import { generateId } from '@/utils';
-import { DashboardViewProps } from '@/types/dashboard';
+import { DashboardViewProps } from '@/src/types/dashboard';
 
 const IdeationView: React.FC<DashboardViewProps> = memo(() => {
   const user = useUser();
@@ -101,8 +101,9 @@ const IdeationView: React.FC<DashboardViewProps> = memo(() => {
                       tags: ['UI/UX', 'Real-time', 'Collaboration']
                     }
                   ].map((idea, index) => (
-                    <Card key={index} hover className="cursor-pointer">
-                      <Card.Content className="p-4">
+                    <div key={index} className="cursor-pointer">
+                      <Card hover>
+                        <Card.Content className="p-4">
                         <h4 className="font-medium text-gray-900 dark:text-white mb-2">
                           {idea.title}
                         </h4>
@@ -131,8 +132,9 @@ const IdeationView: React.FC<DashboardViewProps> = memo(() => {
                             </span>
                           </div>
                         </div>
-                      </Card.Content>
-                    </Card>
+                        </Card.Content>
+                      </Card>
+                    </div>
                   ))}
                 </div>
               </Card.Content>

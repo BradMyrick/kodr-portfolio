@@ -2,7 +2,7 @@
 
 import React, { memo } from 'react';
 import { cn } from '@/utils';
-import { DashboardView, NavigationItem } from '@/types/dashboard';
+import { DashboardView, NavigationItem } from '@/src/types/dashboard';
 
 interface DashboardNavigationProps {
   items: NavigationItem[];

@@ -6,7 +6,7 @@ import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import Avatar from '@/components/ui/Avatar';
 import { generateId } from '@/utils';
-import { DashboardViewProps } from '@/types/dashboard';
+import { DashboardViewProps } from '@/src/types/dashboard';
 
 const TeamsView: React.FC<DashboardViewProps> = memo(() => {
   const user = useUser();
@@ -148,8 +148,9 @@ const TeamsView: React.FC<DashboardViewProps> = memo(() => {
         {/* Teams Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {teams.map((team) => (
-            <Card key={team.id} hover className="cursor-pointer transition-all duration-200 transform hover:scale-[1.01]">
-              <Card.Content className="p-6">
+            <div key={team.id} className="cursor-pointer transition-all duration-200 transform hover:scale-[1.01]">
+              <Card hover>
+                <Card.Content className="p-6">
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex-1">
                     <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
@@ -211,8 +212,9 @@ const TeamsView: React.FC<DashboardViewProps> = memo(() => {
                     ))}
                   </div>
                 </div>
-              </Card.Content>
-            </Card>
+                </Card.Content>
+              </Card>
+            </div>
           ))}
         </div>
       </div>

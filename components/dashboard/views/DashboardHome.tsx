@@ -6,7 +6,7 @@ import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import Avatar from '@/components/ui/Avatar';
 import { formatRelativeTime, generateId } from '@/utils';
-import { DashboardViewProps, DashboardStats, QuickAction } from '@/types/dashboard';
+import { DashboardViewProps, DashboardStats, QuickAction } from '@/src/types/dashboard';
 
 interface StatCardProps {
   title: string;
@@ -53,12 +53,12 @@ interface ProjectCardProps {
 }
 
 const ProjectCard = memo<ProjectCardProps>(({ project, onClick }) => (
-  <Card 
-    hover 
+  <div 
     className="cursor-pointer transition-all duration-200 transform hover:scale-[1.01]"
     onClick={onClick}
   >
-    <Card.Content className="p-6">
+    <Card hover>
+      <Card.Content className="p-6">
       <div className="flex items-start justify-between">
         <div className="flex-1">
           <div className="flex items-center space-x-3 mb-2">
@@ -105,8 +105,9 @@ const ProjectCard = memo<ProjectCardProps>(({ project, onClick }) => (
           </div>
         </div>
       </div>
-    </Card.Content>
-  </Card>
+      </Card.Content>
+    </Card>
+  </div>
 ));
 
 ProjectCard.displayName = 'ProjectCard';

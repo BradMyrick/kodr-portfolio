@@ -6,7 +6,7 @@ import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import Avatar from '@/components/ui/Avatar';
 import { formatRelativeTime, generateId } from '@/utils';
-import { DashboardViewProps } from '@/types/dashboard';
+import { DashboardViewProps } from '@/src/types/dashboard';
 import { Project } from '@/types';
 
 interface FilterState {
@@ -20,12 +20,12 @@ interface ProjectGridItemProps {
 }
 
 const ProjectGridItem = memo<ProjectGridItemProps>(({ project, onClick }) => (
-  <Card 
-    hover 
+  <div 
     className="cursor-pointer transition-all duration-200 transform hover:scale-[1.02]"
     onClick={() => onClick(project)}
   >
-    <Card.Content className="p-6">
+    <Card hover>
+      <Card.Content className="p-6">
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-center space-x-3">
           <div 
@@ -94,8 +94,9 @@ const ProjectGridItem = memo<ProjectGridItemProps>(({ project, onClick }) => (
           )}
         </div>
       )}
-    </Card.Content>
-  </Card>
+      </Card.Content>
+    </Card>
+  </div>
 ));
 
 ProjectGridItem.displayName = 'ProjectGridItem';

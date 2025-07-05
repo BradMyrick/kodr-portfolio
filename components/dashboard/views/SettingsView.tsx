@@ -5,7 +5,7 @@ import { useUser, useTheme, useAppStore } from '@/stores/useAppStore';
 import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import { generateId } from '@/utils';
-import { DashboardViewProps } from '@/types/dashboard';
+import { DashboardViewProps } from '@/src/types/dashboard';
 
 const SettingsView: React.FC<DashboardViewProps> = memo(() => {
   const user = useUser();
@@ -109,7 +109,7 @@ const SettingsView: React.FC<DashboardViewProps> = memo(() => {
                   </label>
                   <div className="flex space-x-4">
                     <Button
-                      variant={theme === 'light' ? 'default' : 'outline'}
+                      variant={theme === 'light' ? 'primary' : 'outline'}
                       onClick={() => handleThemeChange('light')}
                       className="flex items-center space-x-2"
                     >
@@ -119,7 +119,7 @@ const SettingsView: React.FC<DashboardViewProps> = memo(() => {
                       <span>Light</span>
                     </Button>
                     <Button
-                      variant={theme === 'dark' ? 'default' : 'outline'}
+                      variant={theme === 'dark' ? 'primary' : 'outline'}
                       onClick={() => handleThemeChange('dark')}
                       className="flex items-center space-x-2"
                     >

@@ -11,7 +11,7 @@ import ResourcesView from './views/ResourcesView';
 import SettingsView from './views/SettingsView';
 import NotificationsView from './views/NotificationsView';
 import DashboardNavigation from './DashboardNavigation';
-import { DashboardView, NavigationItem } from '@/types/dashboard';
+import { DashboardView, NavigationItem } from '@/src/types/dashboard';
 
 const DashboardWrapper: React.FC = () => {
   const [activeView, setActiveView] = useState<DashboardView>('home');
