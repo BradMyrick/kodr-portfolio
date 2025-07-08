@@ -7,8 +7,9 @@ import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import { useAppStore, useUser } from '@/stores/useAppStore';
-import { User } from '@/types';
+import { User, RegisterForm } from '@/types';
 import { generateId } from '@/utils';
+import { authApi } from '@/lib/api';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -56,22 +57,18 @@ export default function RegisterPage() {
         throw new Error('Password must be at least 8 characters long');
       }
 
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      // Mock registration - replace with actual API call
-      const newUser: User = {
-        id: generateId(),
+      // Call the backend API for registration
+      const registerData: RegisterForm = {
         name: formData.name,
         email: formData.email,
-        avatar: undefined,
-        role: 'member',
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
+        password: formData.password,
+        confirmPassword: formData.confirmPassword,
       };
+      
+      const authResponse = await authApi.register(registerData);
 
       // Set user in store
-      setUser(newUser);
+      setUser(authResponse.user);
 
       // Show success notification
       addNotification({
@@ -80,7 +77,7 @@ export default function RegisterPage() {
         title: 'Welcome to Kodr.pro!',
         message: 'Your account has been created successfully.',
         read: false,
-        userId: newUser.id,
+        userId: authResponse.user.id,
         createdAt: new Date().toISOString(),
       });
 
