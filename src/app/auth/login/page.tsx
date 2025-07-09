@@ -9,6 +9,7 @@ import Button from '@/components/ui/Button';
 import { useAppStore, useUser } from '@/stores/useAppStore';
 import { LoginForm as LoginFormType, User } from '@/types';
 import { generateId } from '@/utils';
+import { authApi } from '@/lib/api';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -24,81 +25,76 @@ export default function LoginPage() {
     }
   }, [user, router]);
 
-  // Mock authentication function (replace with actual API call)
+  // authentication function using API
   const handleLogin = async (formData: LoginFormType) => {
     setLoading(true);
     setError('');
 
     try {
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Call the backend API for authentication
+      const authResponse = await authApi.login(formData);
+      
+      // Set user in store
+      setUser(authResponse.user);
 
-      // Mock authentication - replace with actual authentication logic
-      if (formData.email === 'demo@kodr.pro' && formData.password === 'Password123!') {
-        const mockUser: User = {
-          id: generateId(),
-          name: 'Demo User',
-          email: formData.email,
-          avatar: undefined,
-          role: 'admin',
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        };
+      // Show success notification
+      addNotification({
+        id: generateId(),
+        type: 'success',
+        title: 'Welcome back!',
+        message: 'You have successfully signed in.',
+        read: false,
+        userId: authResponse.user.id,
+        createdAt: new Date().toISOString(),
+      });
 
-        // Set user in store
-        setUser(mockUser);
-
-        // Show success notification
-        addNotification({
-          id: generateId(),
-          type: 'success',
-          title: 'Welcome back!',
-          message: 'You have successfully signed in.',
-          read: false,
-          userId: mockUser.id,
-          createdAt: new Date().toISOString(),
-        });
-
-        // Redirect to dashboard
-        router.push('/dashboard');
-      } else {
-        throw new Error('Invalid credentials');
-      }
-    } catch (err) {
+      // Redirect to dashboard
+      router.push('/dashboard');
+    } catch (err: any) {
       console.error('Login error:', err);
-      setError('Invalid email or password. Please try again.');
+      setError(err.message || 'Invalid email or password. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
-  // OAuth login handlers (mock implementations)
+  // OAuth login handlers using real API
   const handleGoogleLogin = async () => {
-    // Mock Google OAuth
-    console.log('Google OAuth login');
-    addNotification({
-      id: generateId(),
-      type: 'info',
-      title: 'Coming Soon',
-      message: 'Google OAuth integration is coming soon!',
-      read: false,
-      userId: 'temp',
-      createdAt: new Date().toISOString(),
-    });
+    try {
+      const authUrl = await authApi.loginWithGoogle();
+      // Redirect to Google OAuth
+      window.location.href = authUrl;
+    } catch (error) {
+      console.error('Google OAuth error:', error);
+      addNotification({
+        id: generateId(),
+        type: 'error',
+        title: 'OAuth Error',
+        message: 'Failed to initiate Google login. Please try again.',
+        read: false,
+        userId: 'temp',
+        createdAt: new Date().toISOString(),
+      });
+    }
   };
 
   const handleGitHubLogin = async () => {
-    // Mock GitHub OAuth
-    console.log('GitHub OAuth login');
-    addNotification({
-      id: generateId(),
-      type: 'info',
-      title: 'Coming Soon',
-      message: 'GitHub OAuth integration is coming soon!',
-      read: false,
-      userId: 'temp',
-      createdAt: new Date().toISOString(),
-    });
+    try {
+      const authUrl = await authApi.loginWithGitHub();
+      // Redirect to GitHub OAuth
+      window.location.href = authUrl;
+    } catch (error) {
+      console.error('GitHub OAuth error:', error);
+      addNotification({
+        id: generateId(),
+        type: 'error',
+        title: 'OAuth Error',
+        message: 'Failed to initiate GitHub login. Please try again.',
+        read: false,
+        userId: 'temp',
+        createdAt: new Date().toISOString(),
+      });
+    }
   };
 
   if (user) {
