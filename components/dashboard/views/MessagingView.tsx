@@ -3,7 +3,6 @@ import { messagingApi } from '@/lib/api/client';
 import { Message, Room, DirectMessage } from '@/types/messaging';
 import { DashboardViewProps } from '@/src/types/dashboard';
 import { useUser } from '@/stores/useAppStore';
-import { userApi } from '@/lib/api';
 
 interface User {
   id: string;
