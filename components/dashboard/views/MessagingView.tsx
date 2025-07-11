@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { messagingApi } from '@/lib/api/client';
 import { Message, Room, DirectMessage } from '@/types/messaging';
 import { DashboardViewProps } from '@/src/types/dashboard';
+import { useUser } from '@/stores/useAppStore';
 
 interface User {
   id: string;
@@ -10,6 +11,7 @@ interface User {
 }
 
 const MessagingView: React.FC<DashboardViewProps> = ({ isTransitioning, onViewChange }) => {
+  const currentUser = useUser();
   const [activeTab, setActiveTab] = useState<'rooms' | 'dms'>('rooms');
   const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
@@ -35,13 +37,18 @@ const MessagingView: React.FC<DashboardViewProps> = ({ isTransitioning, onViewCh
       setRooms(publicRooms);
       
       // Load users for DM functionality
-      // Note: This assumes we have a users endpoint
-      // For now, we'll create a mock user list
-      setUsers([
-        { id: '1', name: 'Alice Developer', email: 'alice@example.com' },
-        { id: '2', name: 'Bob Engineer', email: 'bob@example.com' },
-        { id: '3', name: 'Charlie Designer', email: 'charlie@example.com' }
-      ]);
+      try {
+        // This will need the backend endpoint to be implemented
+        // For now, keep mock users but exclude current user
+        const mockUsers = [
+          { id: '1', name: 'Alice Developer', email: 'alice@example.com' },
+          { id: '2', name: 'Bob Engineer', email: 'bob@example.com' },
+          { id: '3', name: 'Charlie Designer', email: 'charlie@example.com' }
+        ].filter(user => user.id !== currentUser?.id);
+        setUsers(mockUsers);
+      } catch (error) {
+        console.error('Failed to load users:', error);
+      }
       
     } catch (error) {
       console.error('Failed to load initial data:', error);
@@ -268,17 +275,31 @@ const MessagingView: React.FC<DashboardViewProps> = ({ isTransitioning, onViewCh
         </div>
 
         {/* Messages */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-3">
-          {getCurrentMessages().map((message, index) => (
-            <div key={message.id || index} className="flex flex-col">
-              <div className="bg-gray-100 rounded-lg p-3 max-w-2xl">
-                <p className="text-sm">{message.content}</p>
-                <p className="text-xs text-gray-500 mt-1">
-                  {new Date(message.timestamp * 1000).toLocaleString()}
-                </p>
+        <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50">
+          {getCurrentMessages().map((message, index) => {
+            const isCurrentUser = message.sender_id === currentUser?.id;
+            return (
+              <div key={message.id || index} className={`flex ${isCurrentUser ? 'justify-end' : 'justify-start'}`}>
+                <div className={`max-w-2xl rounded-lg p-3 shadow-sm border ${
+                  isCurrentUser 
+                    ? 'bg-blue-500 text-white ml-12' 
+                    : 'bg-white text-gray-900 mr-12'
+                }`}>
+                  {!isCurrentUser && (
+                    <p className="text-xs font-medium text-gray-600 mb-1">
+                      {message.sender_id}
+                    </p>
+                  )}
+                  <p className="text-sm">{message.content}</p>
+                  <p className={`text-xs mt-1 ${
+                    isCurrentUser ? 'text-blue-100' : 'text-gray-500'
+                  }`}>
+                    {new Date(message.timestamp * 1000).toLocaleString()}
+                  </p>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         {/* Message Input */}

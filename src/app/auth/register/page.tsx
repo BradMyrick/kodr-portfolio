@@ -49,6 +49,19 @@ export default function RegisterPage() {
         throw new Error('Please fill in all fields');
       }
 
+      // Username validation
+      if (formData.name.includes(' ')) {
+        throw new Error('Username cannot contain spaces');
+      }
+
+      if (formData.name.length < 3) {
+        throw new Error('Username must be at least 3 characters long');
+      }
+
+      if (!/^[a-zA-Z0-9_-]+$/.test(formData.name)) {
+        throw new Error('Username can only contain letters, numbers, underscores, and hyphens');
+      }
+
       if (formData.password !== formData.confirmPassword) {
         throw new Error('Passwords do not match');
       }
@@ -133,7 +146,7 @@ export default function RegisterPage() {
 
               <div>
                 <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Full Name
+                  Username
                 </label>
                 <Input
                   id="name"
@@ -142,9 +155,12 @@ export default function RegisterPage() {
                   required
                   value={formData.name}
                   onChange={handleChange}
-                  placeholder="Enter your full name"
+                  placeholder="Enter your username (no spaces)"
                   className="mt-1"
                 />
+                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                  Username must be unique and contain only letters, numbers, underscores, and hyphens.
+                </p>
               </div>
 
               <div>
