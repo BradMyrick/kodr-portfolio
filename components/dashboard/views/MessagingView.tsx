@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { messagingApi } from '@/lib/api/client';
 import { Message, Room } from '@/types/messaging';
+import { DashboardViewProps } from '@/src/types/dashboard';
 
-const MessagingView: React.FC = () => {
+const MessagingView: React.FC<DashboardViewProps> = ({ isTransitioning, onViewChange }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [messageContent, setMessageContent] = useState('');
   const [rooms, setRooms] = useState<Room[]>([]);
