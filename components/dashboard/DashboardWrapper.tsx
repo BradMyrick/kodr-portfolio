@@ -12,6 +12,7 @@ import TeamsView from './views/TeamsView';
 import ResourcesView from './views/ResourcesView';
 import SettingsView from './views/SettingsView';
 import NotificationsView from './views/NotificationsView';
+import MessagingView from './views/MessagingView';
 import DashboardNavigation from './DashboardNavigation';
 import { DashboardView, NavigationItem } from '@/src/types/dashboard';
 
@@ -97,6 +98,15 @@ const DashboardWrapper: React.FC = () => {
       badge: notifications.filter(n => !n.read).length,
     },
     {
+      id: 'messaging',
+      label: 'Messaging',
+      icon: (
+        <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+        </svg>
+      ),
+    },
+    {
       id: 'settings',
       label: 'Settings',
       icon: (
@@ -141,6 +151,8 @@ const DashboardWrapper: React.FC = () => {
         return <ResourcesView {...contentProps} />;
       case 'notifications':
         return <NotificationsView {...contentProps} />;
+      case 'messaging':
+        return <MessagingView {...contentProps} />;
       case 'settings':
         return <SettingsView {...contentProps} />;
       default:

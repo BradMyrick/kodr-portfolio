@@ -152,4 +152,31 @@ export const handleApiError = (error: any): never => {
   throw new Error('An unexpected error occurred');
 };
 
+// Messaging API Endpoints
+export const messagingApi = {
+  sendMessage: async (content: string): Promise<any> => {
+    return apiClient.post('/messages', { content }).then(handleApiResponse).catch(handleApiError);
+  },
+  
+  createRoom: async (name: string, isPublic: boolean): Promise<any> => {
+    return apiClient.post('/rooms', { name, is_public: isPublic }).then(handleApiResponse).catch(handleApiError);
+  },
+
+  joinRoom: async (roomId: string): Promise<any> => {
+    return apiClient.post(`/rooms/${roomId}/join`).then(handleApiResponse).catch(handleApiError);
+  },
+
+  getPublicRooms: async (): Promise<any> => {
+    return apiClient.get('/messages/rooms/public').then(handleApiResponse).catch(handleApiError);
+  },
+
+  sendDirectMessage: async (recipientId: string, content: string): Promise<any> => {
+    return apiClient.post('/direct-messages', { recipient_id: recipientId, content }).then(handleApiResponse).catch(handleApiError);
+  },
+
+  getDirectMessages: async (userId: string): Promise<any> => {
+    return apiClient.get(`/direct-messages/${userId}`).then(handleApiResponse).catch(handleApiError);
+  }
+};
+
 export default apiClient;

@@ -7,7 +7,8 @@ export type DashboardView =
   | 'teams'
   | 'resources'
   | 'notifications'
-  | 'settings';
+  | 'settings'
+  | 'messaging';
 
 export interface NavigationItem {
   id: DashboardView;
