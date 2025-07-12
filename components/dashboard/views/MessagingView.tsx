@@ -6,9 +6,24 @@ import { useUser, useTheme } from '@/stores/useAppStore';
 
 interface User {
   id: string;
-  name: string;
+  username: string;
   email: string;
 }
+
+// Helper function to get display name for sender
+const getSenderDisplayName = (senderId: string, users: User[], currentUser: any): string => {
+  if (senderId === currentUser?.id) {
+    return 'You';
+  }
+  
+  const user = users.find(u => u.id === senderId);
+  if (user) {
+    return user.username;
+  }
+  
+  // Fallback to a cleaned version of sender_id
+  return senderId.replace(/[^a-zA-Z0-9]/g, '').toLowerCase() || 'unknown';
+};
 
 const MessagingView: React.FC<DashboardViewProps> = ({ isTransitioning, onViewChange }) => {
   const currentUser = useUser();
@@ -42,9 +57,9 @@ const MessagingView: React.FC<DashboardViewProps> = ({ isTransitioning, onViewCh
         // This will need the backend endpoint to be implemented
         // For now, keep mock users but exclude current user
         const mockUsers = [
-          { id: '1', name: 'Alice Developer', email: 'alice@example.com' },
-          { id: '2', name: 'Bob Engineer', email: 'bob@example.com' },
-          { id: '3', name: 'Charlie Designer', email: 'charlie@example.com' }
+          { id: '1', username: 'alice', email: 'alice@example.com' },
+          { id: '2', username: 'bob', email: 'bob@example.com' },
+          { id: '3', username: 'charlie', email: 'charlie@example.com' }
         ].filter(user => user.id !== currentUser?.id);
         setUsers(mockUsers);
       } catch (error) {
@@ -66,22 +81,29 @@ const MessagingView: React.FC<DashboardViewProps> = ({ isTransitioning, onViewCh
       setRooms([...rooms, newRoom]);
       setNewRoomName('');
       setShowCreateRoom(false);
+      // Auto-select the newly created room
+      setSelectedRoom(newRoom);
+      // Initialize empty messages for this room
+      setRoomMessages(prev => ({ ...prev, [newRoom.id]: [] }));
     } catch (error) {
       console.error('Failed to create room:', error);
     }
   };
 
   const handleJoinRoom = async (room: Room) => {
+    // Always select the room immediately for UI responsiveness
+    setSelectedRoom(room);
+    
+    // Initialize messages if not already loaded
+    if (!roomMessages[room.id]) {
+      setRoomMessages(prev => ({ ...prev, [room.id]: [] }));
+    }
+    
+    // Try to join the room via API, but don't block UI if it fails
     try {
       await messagingApi.joinRoom(room.id);
-      setSelectedRoom(room);
-      // Load messages for this room if we haven't already
-      if (!roomMessages[room.id]) {
-        // For now, we'll just set empty messages since we don't have the endpoint
-        setRoomMessages(prev => ({ ...prev, [room.id]: [] }));
-      }
     } catch (error) {
-      console.error('Failed to join room:', error);
+      console.warn('Failed to join room via API, but room is still selectable:', error);
     }
   };
 
@@ -139,17 +161,17 @@ const MessagingView: React.FC<DashboardViewProps> = ({ isTransitioning, onViewCh
   }
 
   return (
-    <div className="flex h-full bg-white dark:bg-gray-900">
+    <div className="flex h-full bg-gray-50 dark:bg-gray-900">
       {/* Sidebar */}
-      <div className="w-1/3 border-r border-gray-200 dark:border-gray-700 flex flex-col">
+      <div className="w-1/3 border-r border-gray-200 dark:border-gray-600 flex flex-col bg-white dark:bg-gray-800">
         {/* Tab Navigation */}
-        <div className="flex border-b border-gray-200 dark:border-gray-700">
+        <div className="flex border-b border-gray-200 dark:border-gray-600">
           <button
             onClick={() => setActiveTab('rooms')}
             className={`flex-1 py-3 px-4 text-sm font-medium transition-colors ${
               activeTab === 'rooms'
-                ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border-b-2 border-blue-600'
-                : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                ? 'bg-blue-50 dark:bg-blue-900/50 text-blue-700 dark:text-blue-200 border-b-2 border-blue-600'
+                : 'text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-gray-100'
             }`}
           >
             Rooms
@@ -158,8 +180,8 @@ const MessagingView: React.FC<DashboardViewProps> = ({ isTransitioning, onViewCh
             onClick={() => setActiveTab('dms')}
             className={`flex-1 py-3 px-4 text-sm font-medium transition-colors ${
               activeTab === 'dms'
-                ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border-b-2 border-blue-600'
-                : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                ? 'bg-blue-50 dark:bg-blue-900/50 text-blue-700 dark:text-blue-200 border-b-2 border-blue-600'
+                : 'text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-gray-100'
             }`}
           >
             Direct Messages
@@ -223,8 +245,8 @@ const MessagingView: React.FC<DashboardViewProps> = ({ isTransitioning, onViewCh
                     onClick={() => handleJoinRoom(room)}
                     className={`p-3 rounded cursor-pointer transition-colors ${
                       selectedRoom?.id === room.id
-                        ? 'bg-blue-100 dark:bg-blue-900/30 border-l-4 border-blue-600'
-                        : 'hover:bg-gray-50 dark:hover:bg-gray-800'
+                        ? 'bg-blue-100 dark:bg-blue-900/50 border-l-4 border-blue-600'
+                        : 'hover:bg-gray-50 dark:hover:bg-gray-700'
                     }`}
                   >
                     <div className="flex justify-between items-center">
@@ -250,11 +272,15 @@ const MessagingView: React.FC<DashboardViewProps> = ({ isTransitioning, onViewCh
                     onClick={() => handleLoadDirectMessages(user)}
                     className={`p-3 rounded cursor-pointer transition-colors ${
                       selectedUser?.id === user.id
-                        ? 'bg-blue-100 dark:bg-blue-900/30 border-l-4 border-blue-600'
-                        : 'hover:bg-gray-50 dark:hover:bg-gray-800'
+                        ? 'bg-blue-100 dark:bg-blue-900/50 border-l-4 border-blue-600'
+                        : 'hover:bg-gray-50 dark:hover:bg-gray-700'
                     }`}
                   >
-                    <h4 className="font-medium text-gray-900 dark:text-white">{user.name}</h4>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h4 className="font-medium text-gray-900 dark:text-white">@{user.username}</h4>
+                      </div>
+                    </div>
                     <p className="text-sm text-gray-600 dark:text-gray-400">{user.email}</p>
                   </div>
                 ))}
@@ -267,33 +293,33 @@ const MessagingView: React.FC<DashboardViewProps> = ({ isTransitioning, onViewCh
       {/* Main Chat Area */}
       <div className="flex-1 flex flex-col">
         {/* Chat Header */}
-        <div className="p-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
+        <div className="p-4 border-b border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
             {activeTab === 'rooms' && selectedRoom ? selectedRoom.name : 
-             activeTab === 'dms' && selectedUser ? `Chat with ${selectedUser.name}` :
+             activeTab === 'dms' && selectedUser ? `Chat with @${selectedUser.username}` :
              'Select a room or user to start messaging'}
           </h2>
         </div>
 
         {/* Messages */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50 dark:bg-gray-800">
+        <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50 dark:bg-gray-900">
           {getCurrentMessages().map((message, index) => {
             const isCurrentUser = message.sender_id === currentUser?.id;
             return (
               <div key={message.id || index} className={`flex ${isCurrentUser ? 'justify-end' : 'justify-start'}`}>
                 <div className={`max-w-2xl rounded-lg p-3 shadow-sm border ${
                   isCurrentUser 
-                    ? 'bg-blue-600 text-white ml-12 border-blue-600' 
-                    : 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white mr-12 border-gray-200 dark:border-gray-600'
+                    ? 'bg-blue-600 dark:bg-blue-500 text-white ml-12 border-blue-600 dark:border-blue-500' 
+                    : 'bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 mr-12 border-gray-200 dark:border-gray-600'
                 }`}>
                   {!isCurrentUser && (
-                    <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
-                      {message.sender_id}
+                    <p className="text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">
+                      @{getSenderDisplayName(message.sender_id, users, currentUser)}
                     </p>
                   )}
                   <p className="text-sm">{message.content}</p>
                   <p className={`text-xs mt-1 ${
-                    isCurrentUser ? 'text-blue-100' : 'text-gray-500 dark:text-gray-400'
+                    isCurrentUser ? 'text-blue-100 dark:text-blue-200' : 'text-gray-500 dark:text-gray-300'
                   }`}>
                     {new Date(message.timestamp * 1000).toLocaleString()}
                   </p>
@@ -305,13 +331,13 @@ const MessagingView: React.FC<DashboardViewProps> = ({ isTransitioning, onViewCh
 
         {/* Message Input */}
         {(selectedRoom || selectedUser) && (
-          <div className="p-4 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
+          <div className="p-4 border-t border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800">
             <div className="flex gap-2">
               <textarea
                 value={messageContent}
                 onChange={(e) => setMessageContent(e.target.value)}
                 placeholder="Type your message..."
-                className="flex-1 p-2 border border-gray-300 dark:border-gray-600 rounded-lg resize-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
+                className="flex-1 p-2 border border-gray-300 dark:border-gray-500 rounded-lg resize-none bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-300 focus:border-blue-600 dark:focus:border-blue-400 focus:ring-1 focus:ring-blue-600 dark:focus:ring-blue-400"
                 rows={3}
                 onKeyPress={(e) => {
                   if (e.key === 'Enter' && !e.shiftKey) {
@@ -322,7 +348,7 @@ const MessagingView: React.FC<DashboardViewProps> = ({ isTransitioning, onViewCh
               />
               <button
                 onClick={handleSendMessage}
-                className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors self-end"
+                className="bg-blue-600 dark:bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors self-end"
               >
                 Send
               </button>
