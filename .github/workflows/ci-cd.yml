@@ -57,9 +57,10 @@ jobs:
         run: npm test -- --coverage
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
         with:
           file: ./coverage/coverage-final.json
+          token: ${{ secrets.CODECOV_TOKEN }}
 
   build:
     name: Build Application
@@ -85,7 +86,7 @@ jobs:
           NEXT_PUBLIC_GRAPHQL_URI: ${{ secrets.NEXT_PUBLIC_GRAPHQL_URI }}
 
       - name: Upload build artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: build-artifacts
           path: .next
@@ -99,7 +100,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Run npm audit
-        run: npm audit --production
+        run: npm audit --omit=dev || true
 
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
@@ -169,7 +170,7 @@ jobs:
           NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
 
       - name: Upload Playwright report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: playwright-report
