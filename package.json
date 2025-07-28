@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "description": "Kodr.pro - Sync. Build. Succeed. - A next-generation innovation hub for real-time, AI-powered collaboration",
   "private": true,
+  "engines": {
+    "node": ">=22.0.0"
+  },
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",

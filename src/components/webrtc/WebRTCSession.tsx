@@ -5,9 +5,14 @@ interface WebRTCSessionProps {
   roomId: string;
 }
 
+interface Peer {
+  id: string;
+  name: string;
+}
+
 const WebRTCSession: React.FC<WebRTCSessionProps> = ({ roomId }) => {
   const { connected } = useWebRTC(roomId);
-  const [peers, setPeers] = useState([]);
+  const [peers, setPeers] = useState<Peer[]>([]);
 
   useEffect(() => {
     // Handle peer connections
