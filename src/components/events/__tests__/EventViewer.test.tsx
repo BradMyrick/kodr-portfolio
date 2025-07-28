@@ -15,10 +15,11 @@ describe('EventViewer', () => {
       new Promise(() => {}) // Never resolves to keep loading state
     );
 
-    render(<EventViewer entityId="test-id" entityType="project" />);
+    const { container } = render(<EventViewer entityId="test-id" entityType="project" />);
     
-    // Check for loading spinner
-    expect(screen.getByRole('progressbar', { hidden: true })).toBeInTheDocument();
+    // Check for loading spinner by class
+    const spinner = container.querySelector('.animate-spin');
+    expect(spinner).toBeInTheDocument();
   });
 
   it('renders error state when fetch fails', async () => {

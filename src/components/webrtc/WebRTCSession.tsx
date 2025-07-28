@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useWebRTC } from 'hooks/useWebRTC';
+import { useWebRTC } from '../../hooks/useWebRTC';
 
 interface WebRTCSessionProps {
   roomId: string;
