@@ -5,7 +5,7 @@ import { useUser, useNotifications, useAppStore } from '@/stores/useAppStore';
 import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import { formatRelativeTime } from '@/utils';
-import { DashboardViewProps } from '@/src/types/dashboard';
+import { DashboardViewProps } from '@/types/dashboard';
 
 const NotificationsView: React.FC<DashboardViewProps> = memo(() => {
   const user = useUser();

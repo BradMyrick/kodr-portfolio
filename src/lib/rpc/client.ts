@@ -17,15 +17,18 @@ export interface RPCCallOptions {
 export class RPCClient {
   private ws: WebSocket | null = null;
   private url: string;
-  private pendingCalls: Map<string, { resolve: Function; reject: Function; timeout: NodeJS.Timeout }> = new Map();
+  private pendingCalls: Map<string, { resolve: Function; reject: Function; timeout: number }> = new Map();
   private messageId: number = 0;
   private connected: boolean = false;
   private reconnectAttempts: number = 0;
   private maxReconnectAttempts: number = 5;
   private reconnectDelay: number = 1000;
 
-  constructor(url: string = process.env.NEXT_PUBLIC_RPC_URL || 'ws://localhost:8081/rpc') {
-    this.url = url;
+  constructor(url?: string) {
+    // Default to the correct backend RPC endpoint
+    this.url = url || (typeof window !== 'undefined' 
+      ? `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.hostname}:8080/rpc`
+      : 'ws://localhost:8080/rpc');
   }
 
   /**
@@ -74,7 +77,7 @@ export class RPCClient {
       
       if (message.id && this.pendingCalls.has(message.id)) {
         const { resolve, reject, timeout } = this.pendingCalls.get(message.id)!;
-        clearTimeout(timeout);
+        window.clearTimeout(timeout);
         this.pendingCalls.delete(message.id);
         
         if (message.error) {
@@ -94,7 +97,7 @@ export class RPCClient {
   private handleDisconnect(): void {
     // Clear all pending calls
     for (const [id, { reject, timeout }] of this.pendingCalls) {
-      clearTimeout(timeout);
+      window.clearTimeout(timeout);
       reject(new Error('Connection lost'));
     }
     this.pendingCalls.clear();
@@ -124,7 +127,7 @@ export class RPCClient {
     const timeout = options.timeout || 30000; // 30 seconds default
     
     return new Promise((resolve, reject) => {
-      const timeoutHandle = setTimeout(() => {
+      const timeoutHandle = window.setTimeout(() => {
         this.pendingCalls.delete(id);
         reject(new Error(`RPC call timed out: ${method}`));
       }, timeout);
@@ -141,7 +144,7 @@ export class RPCClient {
         this.ws!.send(JSON.stringify(message));
       } catch (error) {
         this.pendingCalls.delete(id);
-        clearTimeout(timeoutHandle);
+        window.clearTimeout(timeoutHandle);
         reject(error);
       }
     });
@@ -169,8 +172,8 @@ export class RPCClient {
 // Service interfaces
 export interface AuthService {
   login(email: string, password: string): Promise<{ token: string; refreshToken: string; user: any }>;
-  logout(token: string): Promise<void>;
-  refreshToken(refreshToken: string): Promise<{ token: string; newRefreshToken: string }>;
+  logout(accessToken: string, refreshToken: string): Promise<{ success: boolean }>;
+  refresh(refreshToken: string): Promise<{ token: string; refreshToken: string; expiresIn: number; tokenType: string }>;
 }
 
 export interface UserService {
@@ -197,10 +200,10 @@ export class RPCServices {
     return {
       login: (email: string, password: string) => 
         this.client.call('auth.login', { email, password }),
-      logout: (token: string) => 
-        this.client.call('auth.logout', { token }),
-      refreshToken: (refreshToken: string) => 
-        this.client.call('auth.refreshToken', { refreshToken })
+      logout: (accessToken: string, refreshToken: string) => 
+        this.client.call('auth.logout', { accessToken, refreshToken }),
+      refresh: (refreshToken: string) => 
+        this.client.call('auth.refresh', { refreshToken })
     };
   }
   

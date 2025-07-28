@@ -6,7 +6,7 @@ import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import Avatar from '@/components/ui/Avatar';
 import { generateId } from '@/utils';
-import { DashboardViewProps } from '@/src/types/dashboard';
+import { DashboardViewProps } from '@/types/dashboard';
 
 const TeamsView: React.FC<DashboardViewProps> = memo(() => {
   const user = useUser();

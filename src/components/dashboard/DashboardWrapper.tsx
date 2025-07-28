@@ -14,7 +14,7 @@ import SettingsView from './views/SettingsView';
 import NotificationsView from './views/NotificationsView';
 import MessagingView from './views/MessagingView';
 import DashboardNavigation from './DashboardNavigation';
-import { DashboardView, NavigationItem } from '@/src/types/dashboard';
+import { DashboardView, NavigationItem } from '@/types/dashboard';
 
 const DashboardWrapper: React.FC = () => {
   const router = useRouter();

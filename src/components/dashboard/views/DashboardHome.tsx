@@ -6,7 +6,7 @@ import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import Avatar from '@/components/ui/Avatar';
 import { formatRelativeTime, generateId } from '@/utils';
-import { DashboardViewProps, DashboardStats, QuickAction } from '@/src/types/dashboard';
+import { DashboardViewProps, DashboardStats, QuickAction } from '@/types/dashboard';
 
 interface StatCardProps {
   title: string;

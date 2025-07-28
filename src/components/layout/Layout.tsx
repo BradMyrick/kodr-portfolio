@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import LayoutWrapper from '@/src/app/layout-wrapper';
+import LayoutWrapper from '@/app/layout-wrapper';
 
 interface LayoutProps {
   children: React.ReactNode;
