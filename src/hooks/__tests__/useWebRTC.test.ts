@@ -4,9 +4,9 @@ import { useWebRTC } from '../useWebRTC';
 // Mock RTCPeerConnection
 const mockRTCPeerConnection = {
   close: jest.fn(),
-  onicecandidate: null,
-  onconnectionstatechange: null,
-  connectionState: 'new',
+  onicecandidate: null as ((event: RTCPeerConnectionIceEvent) => void) | null,
+  onconnectionstatechange: null as ((event: Event) => void) | null,
+  connectionState: 'new' as RTCPeerConnectionState,
 };
 
 global.RTCPeerConnection = jest.fn().mockImplementation(() => mockRTCPeerConnection) as any;
@@ -38,7 +38,9 @@ describe('useWebRTC', () => {
     // Simulate connection established
     act(() => {
       mockRTCPeerConnection.connectionState = 'connected';
-      mockRTCPeerConnection.onconnectionstatechange!({} as any);
+      if (mockRTCPeerConnection.onconnectionstatechange) {
+        mockRTCPeerConnection.onconnectionstatechange({} as any);
+      }
     });
     
     expect(result.current.connected).toBe(true);
