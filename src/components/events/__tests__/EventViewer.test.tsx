@@ -44,4 +44,17 @@ describe('EventViewer', () => {
     const emptyMessage = await screen.findByText(/No events found/i);
     expect(emptyMessage).toBeInTheDocument();
   });
+
+  it('fetches events with correct parameters', () => {
+    (global.fetch as jest.Mock).mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ events: [] }),
+    });
+
+    render(<EventViewer entityId="user-123" entityType="user" limit={25} />);
+    
+    expect(fetch).toHaveBeenCalledWith(
+      '/api/events?entityId=user-123&entityType=user&limit=25'
+    );
+  });
 });

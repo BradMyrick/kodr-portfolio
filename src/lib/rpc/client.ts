@@ -172,7 +172,8 @@ export class RPCClient {
 // Service interfaces
 export interface AuthService {
   login(email: string, password: string): Promise<{ token: string; refreshToken: string; user: any }>;
-  logout(accessToken: string, refreshToken: string): Promise<{ success: boolean }>;
+  logout(accessToken: string, refreshToken?: string): Promise<{ success: boolean }>;
+  refreshToken(refreshToken: string): Promise<{ token: string; refreshToken: string; expiresIn: number; tokenType: string }>;
   refresh(refreshToken: string): Promise<{ token: string; refreshToken: string; expiresIn: number; tokenType: string }>;
 }
 
@@ -200,8 +201,10 @@ export class RPCServices {
     return {
       login: (email: string, password: string) => 
         this.client.call('auth.login', { email, password }),
-      logout: (accessToken: string, refreshToken: string) => 
+      logout: (accessToken: string, refreshToken?: string) => 
         this.client.call('auth.logout', { accessToken, refreshToken }),
+      refreshToken: (refreshToken: string) => 
+        this.client.call('auth.refreshToken', { refreshToken }),
       refresh: (refreshToken: string) => 
         this.client.call('auth.refresh', { refreshToken })
     };
