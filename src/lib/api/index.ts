@@ -9,4 +9,9 @@ export { default as apiClient, tokenStorage, handleApiResponse, handleApiError }
 // Export types
 export type { AuthResponse, RefreshResponse } from './auth';
 export type { UpdateUserRequest } from './users';
-export type { ProjectsQuery, UpdateProjectRequest } from './projects';
+export type { 
+  ProjectsQuery, 
+  UpdateProjectRequest, 
+  AddMemberRequest, 
+  UpdateMemberRoleRequest 
+} from './projects';

@@ -179,7 +179,7 @@ export default function ProjectsPage() {
                 <div className="ml-4">
                   <p className="text-sm font-medium text-gray-600 dark:text-gray-400">On Hold</p>
                   <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                    {projects.filter(p => p.status === 'on-hold').length}
+                    {projects.filter(p => p.status === 'on_hold').length}
                   </p>
                 </div>
               </div>
@@ -218,7 +218,7 @@ export default function ProjectsPage() {
                       style={{ backgroundColor: project.color }}
                     />
                     <h3 className="text-lg font-medium text-gray-900 dark:text-white">
-                      {project.title}
+                      {project.name}
                     </h3>
                   </div>
                   <span className={`px-2 py-1 text-xs rounded-full ${
@@ -226,7 +226,7 @@ export default function ProjectsPage() {
                       ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
                       : project.status === 'completed'
                       ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
-                      : project.status === 'on-hold'
+                      : project.status === 'on_hold'
                       ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
                       : 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200'
                   }`}>
@@ -241,18 +241,18 @@ export default function ProjectsPage() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
                     <div className="flex -space-x-2">
-                      {project.contributors.slice(0, 3).map((contributor) => (
-                        <Avatar
-                          key={contributor.id}
-                          src={contributor.avatar}
-                          name={contributor.name}
-                          size="sm"
-                          className="border-2 border-white dark:border-gray-800"
-                        />
+                      {project.members.slice(0, 3).map((member, index) => (
+                        <div
+                          key={member.userId || index}
+                          className="w-6 h-6 rounded-full bg-gray-300 dark:bg-gray-600 border-2 border-white dark:border-gray-800 flex items-center justify-center text-xs font-medium text-gray-600 dark:text-gray-300"
+                          title={`Member (${member.role})`}
+                        >
+                          {member.userId.charAt(0).toUpperCase()}
+                        </div>
                       ))}
                     </div>
                     <span className="text-sm text-gray-500 dark:text-gray-400">
-                      {project.contributors.length} member{project.contributors.length !== 1 ? 's' : ''}
+                      {project.members.length} member{project.members.length !== 1 ? 's' : ''}
                     </span>
                   </div>
                   <span className="text-sm text-gray-500 dark:text-gray-400">
@@ -306,7 +306,7 @@ export default function ProjectsPage() {
         <Modal
           isOpen={isKanbanOpen}
           onClose={() => setIsKanbanOpen(false)}
-          title={selectedProject?.title}
+          title={selectedProject?.name}
           size="xl"
         >
           {selectedProject && (
@@ -315,7 +315,7 @@ export default function ProjectsPage() {
                 tasks={tasks}
                 onTaskUpdate={handleTaskUpdate}
                 onTaskCreate={handleTaskCreate}
-                users={selectedProject.contributors as User[]}
+                users={[]} // TODO: Convert project members to User[] format
               />
             </div>
           )}

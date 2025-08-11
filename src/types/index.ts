@@ -10,18 +10,45 @@ export interface User {
   updatedAt: string;
 }
 
+export interface ProjectMember {
+  userId: string;
+  role: 'owner' | 'admin' | 'member' | 'viewer';
+  joinedAt: string;
+  invitedBy: string;
+  lastActive: string;
+}
+
+export interface ProjectProgress {
+  completionPercentage: number;
+  totalIdeas: number;
+  completedIdeas: number;
+  inProgressIdeas: number;
+  daysElapsed: number;
+  daysRemaining: number;
+  isOnSchedule: boolean;
+  weeklyActivity: number;
+  monthlyActivity: number;
+}
+
 export interface Project {
   id: string;
-  title: string;
+  name: string;
   description: string;
-  status: 'active' | 'completed' | 'on-hold' | 'archived';
-  contributors: User[];
-  owner: User;
+  avatar: string;
+  color: string;
+  status: 'active' | 'completed' | 'on_hold' | 'archived';
+  priority: 'low' | 'medium' | 'high' | 'urgent';
+  owner: string;
+  members: ProjectMember[];
+  tags: string[];
+  category: string;
+  isPublic: boolean;
+  progress: ProjectProgress;
+  aiEnabled: boolean;
+  autoGenerateIdeas: boolean;
   createdAt: string;
   updatedAt: string;
   lastActivity: string;
-  tags: string[];
-  color: string;
 }
 
 export interface Task {
@@ -144,10 +171,15 @@ export interface RegisterForm {
 }
 
 export interface ProjectForm {
-  title: string;
+  name: string;
   description: string;
   tags: string[];
   color: string;
+  category: string;
+  priority: 'low' | 'medium' | 'high' | 'urgent';
+  isPublic: boolean;
+  aiEnabled: boolean;
+  autoGenerateIdeas: boolean;
 }
 
 export interface TaskForm {
