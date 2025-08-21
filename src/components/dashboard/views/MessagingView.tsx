@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-// import { messagingApi } from '@/lib/api/client';
+import { messagingApi } from '@/lib/api/client';
 import { Message, Room, DirectMessage } from '@/types/messaging';
 import { DashboardViewProps } from '@/types/dashboard';
 import { useUser, useTheme } from '@/stores/useAppStore';
@@ -49,9 +49,8 @@ const MessagingView: React.FC<DashboardViewProps> = ({ isTransitioning, onViewCh
     setLoading(true);
     try {
       // Load public rooms
-      // TODO: Replace with RPC call
-      // const publicRooms = await messagingApi.getPublicRooms();
-      setRooms([]);
+      const publicRooms = await messagingApi.getPublicRooms();
+      setRooms(publicRooms || []);
       
       // Load users for DM functionality
       try {
@@ -78,9 +77,7 @@ const MessagingView: React.FC<DashboardViewProps> = ({ isTransitioning, onViewCh
     if (newRoomName.trim() === '') return;
     
     try {
-      // TODO: Replace with RPC call
-      // const newRoom = await messagingApi.createRoom(newRoomName, newRoomPublic);
-      const newRoom = { id: Date.now().toString(), name: newRoomName, is_public: newRoomPublic, members: [] };
+      const newRoom = await messagingApi.createRoom(newRoomName, newRoomPublic);
       setRooms([...rooms, newRoom]);
       setNewRoomName('');
       setShowCreateRoom(false);
@@ -97,15 +94,20 @@ const MessagingView: React.FC<DashboardViewProps> = ({ isTransitioning, onViewCh
     // Always select the room immediately for UI responsiveness
     setSelectedRoom(room);
     
-    // Initialize messages if not already loaded
+    // Load existing messages for the room if not already loaded
     if (!roomMessages[room.id]) {
-      setRoomMessages(prev => ({ ...prev, [room.id]: [] }));
+      try {
+        const messages = await messagingApi.getRoomMessages(room.id);
+        setRoomMessages(prev => ({ ...prev, [room.id]: messages || [] }));
+      } catch (error) {
+        console.warn('Failed to load room messages:', error);
+        setRoomMessages(prev => ({ ...prev, [room.id]: [] }));
+      }
     }
     
     // Try to join the room via API, but don't block UI if it fails
     try {
-      // TODO: Replace with RPC call
-      // await messagingApi.joinRoom(room.id);
+      await messagingApi.joinRoom(room.id);
     } catch (error) {
       console.warn('Failed to join room via API, but room is still selectable:', error);
     }
@@ -116,17 +118,13 @@ const MessagingView: React.FC<DashboardViewProps> = ({ isTransitioning, onViewCh
     
     try {
       if (activeTab === 'rooms' && selectedRoom) {
-        // TODO: Replace with RPC call
-        // const newMessage = await messagingApi.sendMessage(messageContent);
-        const newMessage = { id: Date.now().toString(), content: messageContent, sender_id: currentUser?.id || 'user', timestamp: Date.now() / 1000 };
+        const newMessage = await messagingApi.sendMessage(messageContent, selectedRoom.id);
         setRoomMessages(prev => ({
           ...prev,
           [selectedRoom.id]: [...(prev[selectedRoom.id] || []), newMessage]
         }));
       } else if (activeTab === 'dms' && selectedUser) {
-        // TODO: Replace with RPC call
-        // const newDM = await messagingApi.sendDirectMessage(selectedUser.id, messageContent);
-        const newDM = { id: Date.now().toString(), content: messageContent, sender_id: currentUser?.id || 'user', recipient_id: selectedUser.id, timestamp: Date.now() / 1000 };
+        const newDM = await messagingApi.sendDirectMessage(selectedUser.id, messageContent);
         setDmMessages(prev => ({
           ...prev,
           [selectedUser.id]: [...(prev[selectedUser.id] || []), newDM]
@@ -140,9 +138,8 @@ const MessagingView: React.FC<DashboardViewProps> = ({ isTransitioning, onViewCh
 
   const handleLoadDirectMessages = async (user: User) => {
     try {
-      // TODO: Replace with RPC call
-      // const messages = await messagingApi.getDirectMessages(user.id);
-      setDmMessages(prev => ({ ...prev, [user.id]: [] }));
+      const messages = await messagingApi.getDirectMessages(user.id);
+      setDmMessages(prev => ({ ...prev, [user.id]: messages || [] }));
       setSelectedUser(user);
     } catch (error) {
       console.error('Failed to load direct messages:', error);

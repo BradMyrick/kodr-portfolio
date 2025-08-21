@@ -154,8 +154,8 @@ export const handleApiError = (error: any): never => {
 
 // Messaging API Endpoints
 export const messagingApi = {
-  sendMessage: async (content: string): Promise<any> => {
-    return apiClient.post('/messages', { content }).then(handleApiResponse).catch(handleApiError);
+  sendMessage: async (content: string, roomId: string): Promise<any> => {
+    return apiClient.post('/messages', { content, room_id: roomId }).then(handleApiResponse).catch(handleApiError);
   },
   
   createRoom: async (name: string, isPublic: boolean): Promise<any> => {
@@ -168,6 +168,10 @@ export const messagingApi = {
 
   getPublicRooms: async (): Promise<any> => {
     return apiClient.get('/messages/rooms/public').then(handleApiResponse).catch(handleApiError);
+  },
+
+  getRoomMessages: async (roomId: string): Promise<any> => {
+    return apiClient.get(`/rooms/${roomId}/messages`).then(handleApiResponse).catch(handleApiError);
   },
 
   sendDirectMessage: async (recipientId: string, content: string): Promise<any> => {
