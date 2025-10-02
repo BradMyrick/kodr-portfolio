@@ -113,8 +113,8 @@ export function useRealtime(handlers: RealtimeHandlers = {}) {
   const [error, setError] = useState<Error | null>(null);
   
   const wsRef = useRef<WebSocket | null>(null);
-  const reconnectTimeoutRef = useRef<NodeJS.Timeout>();
-  const heartbeatIntervalRef = useRef<NodeJS.Timeout>();
+  const reconnectTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
+  const heartbeatIntervalRef = useRef<NodeJS.Timeout | undefined>(undefined);
   const reconnectAttemptsRef = useRef(0);
   const handlersRef = useRef(handlers);
   
