@@ -1,13 +1,16 @@
-import React, { useState, useEffect } from 'react';
-// import { messagingApi } from '@/lib/api/client';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { messagingApi } from '@/lib/api/client';
 import { Message, Room, DirectMessage } from '@/types/messaging';
 import { DashboardViewProps } from '@/types/dashboard';
 import { useUser, useTheme } from '@/stores/useAppStore';
+import { useRealtime, ConnectionState, ChatMessage, PresenceUpdate, TypingIndicator, RoomEvent } from '@/hooks/useRealtime';
 
 interface User {
   id: string;
   username: string;
   email: string;
+  avatar?: string;
+  company?: string;
 }
 
 // Helper function to get display name for sender
@@ -40,6 +43,91 @@ const MessagingView: React.FC<DashboardViewProps> = ({ isTransitioning, onViewCh
   const [newRoomName, setNewRoomName] = useState('');
   const [newRoomPublic, setNewRoomPublic] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [onlineUsers, setOnlineUsers] = useState<Set<string>>(new Set());
+  const [typingUsers, setTypingUsers] = useState<{[roomId: string]: Set<string>}>({}); 
+  const typingTimeoutRef = useRef<{[key: string]: NodeJS.Timeout}>({});
+
+  // WebSocket handlers
+  const handleRealtimeMessage = useCallback((msg: ChatMessage) => {
+    // Add message to the appropriate room
+    setRoomMessages(prev => ({
+      ...prev,
+      [msg.roomId]: [...(prev[msg.roomId] || []), {
+        id: msg.id,
+        sender_id: msg.senderId,
+        content: msg.content,
+        timestamp: msg.timestamp,
+        room_id: msg.roomId
+      } as Message]
+    }));
+  }, []);
+
+  const handlePresenceUpdate = useCallback((presence: PresenceUpdate) => {
+    setOnlineUsers(prev => {
+      const newSet = new Set(prev);
+      if (presence.status === 'online') {
+        newSet.add(presence.userId);
+      } else if (presence.status === 'offline') {
+        newSet.delete(presence.userId);
+      }
+      return newSet;
+    });
+  }, []);
+
+  const handleTypingIndicator = useCallback((typing: TypingIndicator) => {
+    const key = `${typing.roomId}-${typing.userId}`;
+    
+    // Clear existing timeout
+    if (typingTimeoutRef.current[key]) {
+      clearTimeout(typingTimeoutRef.current[key]);
+    }
+    
+    setTypingUsers(prev => {
+      const roomTypers = new Set(prev[typing.roomId] || []);
+      if (typing.isTyping) {
+        roomTypers.add(typing.userId);
+        // Auto-remove after 3 seconds
+        typingTimeoutRef.current[key] = setTimeout(() => {
+          setTypingUsers(p => {
+            const updated = new Set(p[typing.roomId] || []);
+            updated.delete(typing.userId);
+            return { ...p, [typing.roomId]: updated };
+          });
+        }, 3000);
+      } else {
+        roomTypers.delete(typing.userId);
+      }
+      return { ...prev, [typing.roomId]: roomTypers };
+    });
+  }, []);
+
+  const handleRoomEvent = useCallback((event: RoomEvent) => {
+    // Handle room membership changes
+    if (event.action === 'joined' && selectedRoom?.id === event.roomId) {
+      // Could update room members if we track them
+      console.log(`${event.userName} joined the room`);
+    }
+  }, [selectedRoom]);
+
+  // Initialize WebSocket connection
+  const {
+    connectionState,
+    isConnected,
+    joinRoom,
+    leaveRoom,
+    sendTyping
+  } = useRealtime({
+    onMessage: handleRealtimeMessage,
+    onPresenceUpdate: handlePresenceUpdate,
+    onTyping: handleTypingIndicator,
+    onRoomEvent: handleRoomEvent,
+    onConnectionChange: (state) => {
+      console.log('WebSocket connection state:', state);
+    },
+    onError: (error) => {
+      console.error('WebSocket error:', error);
+    }
+  });
 
   useEffect(() => {
     loadInitialData();
@@ -49,22 +137,42 @@ const MessagingView: React.FC<DashboardViewProps> = ({ isTransitioning, onViewCh
     setLoading(true);
     try {
       // Load public rooms
-      // TODO: Replace with RPC call
-      // const publicRooms = await messagingApi.getPublicRooms();
-      setRooms([]);
+      const publicRooms = await messagingApi.getPublicRooms();
+      setRooms(publicRooms || []);
       
       // Load users for DM functionality
       try {
-        // This will need the backend endpoint to be implemented
-        // For now, keep mock users but exclude current user
+        const response = await fetch('/api/v1/users?limit=50', {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
+          }
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success && data.data) {
+            // Filter out current user and transform data
+            const userList = data.data
+              .filter((u: any) => u.id !== currentUser?.id)
+              .map((u: any) => ({
+                id: u.id,
+                username: u.name || u.email.split('@')[0],
+                email: u.email,
+                avatar: u.avatar,
+                company: u.company
+              }));
+            setUsers(userList);
+          }
+        }
+      } catch (error) {
+        console.error('Failed to load users:', error);
+        // Fallback to mock users
         const mockUsers = [
           { id: '1', username: 'alice', email: 'alice@example.com' },
           { id: '2', username: 'bob', email: 'bob@example.com' },
           { id: '3', username: 'charlie', email: 'charlie@example.com' }
         ].filter(user => user.id !== currentUser?.id);
         setUsers(mockUsers);
-      } catch (error) {
-        console.error('Failed to load users:', error);
       }
       
     } catch (error) {
@@ -78,9 +186,7 @@ const MessagingView: React.FC<DashboardViewProps> = ({ isTransitioning, onViewCh
     if (newRoomName.trim() === '') return;
     
     try {
-      // TODO: Replace with RPC call
-      // const newRoom = await messagingApi.createRoom(newRoomName, newRoomPublic);
-      const newRoom = { id: Date.now().toString(), name: newRoomName, is_public: newRoomPublic, members: [] };
+      const newRoom = await messagingApi.createRoom(newRoomName, newRoomPublic);
       setRooms([...rooms, newRoom]);
       setNewRoomName('');
       setShowCreateRoom(false);
@@ -94,18 +200,33 @@ const MessagingView: React.FC<DashboardViewProps> = ({ isTransitioning, onViewCh
   };
 
   const handleJoinRoom = async (room: Room) => {
+    // Leave previous room if any
+    if (selectedRoom && selectedRoom.id !== room.id) {
+      leaveRoom(selectedRoom.id);
+    }
+    
     // Always select the room immediately for UI responsiveness
     setSelectedRoom(room);
     
-    // Initialize messages if not already loaded
+    // Join room via WebSocket
+    if (isConnected) {
+      joinRoom(room.id);
+    }
+    
+    // Load existing messages for the room if not already loaded
     if (!roomMessages[room.id]) {
-      setRoomMessages(prev => ({ ...prev, [room.id]: [] }));
+      try {
+        const messages = await messagingApi.getRoomMessages(room.id);
+        setRoomMessages(prev => ({ ...prev, [room.id]: messages || [] }));
+      } catch (error) {
+        console.warn('Failed to load room messages:', error);
+        setRoomMessages(prev => ({ ...prev, [room.id]: [] }));
+      }
     }
     
     // Try to join the room via API, but don't block UI if it fails
     try {
-      // TODO: Replace with RPC call
-      // await messagingApi.joinRoom(room.id);
+      await messagingApi.joinRoom(room.id);
     } catch (error) {
       console.warn('Failed to join room via API, but room is still selectable:', error);
     }
@@ -116,17 +237,13 @@ const MessagingView: React.FC<DashboardViewProps> = ({ isTransitioning, onViewCh
     
     try {
       if (activeTab === 'rooms' && selectedRoom) {
-        // TODO: Replace with RPC call
-        // const newMessage = await messagingApi.sendMessage(messageContent);
-        const newMessage = { id: Date.now().toString(), content: messageContent, sender_id: currentUser?.id || 'user', timestamp: Date.now() / 1000 };
+        const newMessage = await messagingApi.sendMessage(messageContent, selectedRoom.id);
         setRoomMessages(prev => ({
           ...prev,
           [selectedRoom.id]: [...(prev[selectedRoom.id] || []), newMessage]
         }));
       } else if (activeTab === 'dms' && selectedUser) {
-        // TODO: Replace with RPC call
-        // const newDM = await messagingApi.sendDirectMessage(selectedUser.id, messageContent);
-        const newDM = { id: Date.now().toString(), content: messageContent, sender_id: currentUser?.id || 'user', recipient_id: selectedUser.id, timestamp: Date.now() / 1000 };
+        const newDM = await messagingApi.sendDirectMessage(selectedUser.id, messageContent);
         setDmMessages(prev => ({
           ...prev,
           [selectedUser.id]: [...(prev[selectedUser.id] || []), newDM]
@@ -140,9 +257,8 @@ const MessagingView: React.FC<DashboardViewProps> = ({ isTransitioning, onViewCh
 
   const handleLoadDirectMessages = async (user: User) => {
     try {
-      // TODO: Replace with RPC call
-      // const messages = await messagingApi.getDirectMessages(user.id);
-      setDmMessages(prev => ({ ...prev, [user.id]: [] }));
+      const messages = await messagingApi.getDirectMessages(user.id);
+      setDmMessages(prev => ({ ...prev, [user.id]: messages || [] }));
       setSelectedUser(user);
     } catch (error) {
       console.error('Failed to load direct messages:', error);
@@ -286,11 +402,23 @@ const MessagingView: React.FC<DashboardViewProps> = ({ isTransitioning, onViewCh
                     }`}
                   >
                     <div className="flex items-center justify-between">
-                      <div>
-                        <h4 className="font-medium text-gray-900 dark:text-white">@{user.username}</h4>
+                      <div className="flex items-center">
+                        <div className="relative mr-2">
+                          <div className="w-8 h-8 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center">
+                            <span className="text-xs font-semibold text-gray-700 dark:text-gray-300">
+                              {user.username.charAt(0).toUpperCase()}
+                            </span>
+                          </div>
+                          {onlineUsers.has(user.id) && (
+                            <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 rounded-full border border-white dark:border-gray-800"></span>
+                          )}
+                        </div>
+                        <div>
+                          <h4 className="font-medium text-gray-900 dark:text-white">@{user.username}</h4>
+                          <p className="text-sm text-gray-600 dark:text-gray-400">{user.email}</p>
+                        </div>
                       </div>
                     </div>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">{user.email}</p>
                   </div>
                 ))}
               </div>
@@ -303,11 +431,32 @@ const MessagingView: React.FC<DashboardViewProps> = ({ isTransitioning, onViewCh
       <div className="flex-1 flex flex-col">
         {/* Chat Header */}
         <div className="p-4 border-b border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-            {activeTab === 'rooms' && selectedRoom ? selectedRoom.name : 
-             activeTab === 'dms' && selectedUser ? `Chat with @${selectedUser.username}` :
-             'Select a room or user to start messaging'}
-          </h2>
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+              {activeTab === 'rooms' && selectedRoom ? selectedRoom.name : 
+               activeTab === 'dms' && selectedUser ? `Chat with @${selectedUser.username}` :
+               'Select a room or user to start messaging'}
+            </h2>
+            {isConnected ? (
+              <span className="flex items-center text-xs text-green-600 dark:text-green-400">
+                <span className="w-2 h-2 bg-green-600 dark:bg-green-400 rounded-full mr-1 animate-pulse"></span>
+                Connected
+              </span>
+            ) : (
+              <span className="flex items-center text-xs text-gray-500 dark:text-gray-400">
+                <span className="w-2 h-2 bg-gray-500 dark:bg-gray-400 rounded-full mr-1"></span>
+                Disconnected
+              </span>
+            )}
+          </div>
+          {/* Typing indicator */}
+          {selectedRoom && typingUsers[selectedRoom.id]?.size > 0 && (
+            <div className="mt-1 text-xs text-gray-500 dark:text-gray-400 italic">
+              {Array.from(typingUsers[selectedRoom.id]).map(userId => 
+                users.find(u => u.id === userId)?.username || 'Someone'
+              ).join(', ')} {typingUsers[selectedRoom.id].size === 1 ? 'is' : 'are'} typing...
+            </div>
+          )}
         </div>
 
         {/* Messages */}
@@ -344,7 +493,19 @@ const MessagingView: React.FC<DashboardViewProps> = ({ isTransitioning, onViewCh
             <div className="flex gap-2">
               <textarea
                 value={messageContent}
-                onChange={(e) => setMessageContent(e.target.value)}
+                onChange={(e) => {
+                  setMessageContent(e.target.value);
+                  // Send typing indicator
+                  if (selectedRoom && isConnected) {
+                    sendTyping(selectedRoom.id, e.target.value.length > 0);
+                  }
+                }}
+                onBlur={() => {
+                  // Stop typing when focus is lost
+                  if (selectedRoom && isConnected) {
+                    sendTyping(selectedRoom.id, false);
+                  }
+                }}
                 placeholder="Type your message..."
                 className="flex-1 p-2 border border-gray-300 dark:border-gray-500 rounded-lg resize-none bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-300 focus:border-blue-600 dark:focus:border-blue-400 focus:ring-1 focus:ring-blue-600 dark:focus:ring-blue-400"
                 rows={3}
@@ -352,6 +513,10 @@ const MessagingView: React.FC<DashboardViewProps> = ({ isTransitioning, onViewCh
                   if (e.key === 'Enter' && !e.shiftKey) {
                     e.preventDefault();
                     handleSendMessage();
+                    // Stop typing after sending
+                    if (selectedRoom && isConnected) {
+                      sendTyping(selectedRoom.id, false);
+                    }
                   }
                 }}
               />
