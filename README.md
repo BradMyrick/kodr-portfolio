@@ -31,7 +31,7 @@ Kodr.pro is a next-generation innovation hub enabling real-time, AI-powered coll
 
 | Layer          | Tech Stack/Tools                                                                                 |
 |----------------|-------------------------------------------------------------------------------------------------|
-| Frontend       | Next.js (TypeScript), Tailwind CSS, Zustand/Redux, WebSockets, Heroicons                        |
+| Frontend       | Next.js (TypeScript), Tailwind CSS, Zustand/Redux, WebSockets (JSON), Heroicons                 |
 | Backend/API    | Go (Gin/Echo/Fiber), Python (FastAPI for AI endpoints), REST/gRPC, WebSockets                   |
 | AI/ML          | Python (Hugging Face, LangChain, OpenAI APIs), containerized microservices                      |
 | Database       | PostgreSQL (primary), Redis (cache/session), Neo4j (idea graph, optional)                       |
@@ -67,6 +67,8 @@ Kodr.pro is a next-generation innovation hub enabling real-time, AI-powered coll
 - **REST/gRPC endpoints** for all major resources.
 - **OpenAPI/Swagger** documentation.
 - **WebSocket endpoints** for real-time features (chat, board updates, notifications).
+  - Currently using JSON protocol
+  - Binary Cap'n Proto protocol in development (see `BINARY_WEBSOCKET_STATUS.md`)
 - **AI endpoints** for prompt-based interactions.
 
 ### 7. **DevOps & Deployment**
