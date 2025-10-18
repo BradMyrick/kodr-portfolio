@@ -35,7 +35,7 @@ This is the new landing page for Kodr.pro, repositioned as a polyglot developmen
 ## Environment Variables
 ```bash
 NEXT_PUBLIC_API_URL=http://localhost:8080       # Backend API
-NEXT_PUBLIC_GITHUB_URL=https://github.com/kodr-pro
+NEXT_PUBLIC_GITHUB_URL=https://github.com/BradMyrick
 NEXT_PUBLIC_TWITTER_URL=https://twitter.com/kodr_eth
 NEXT_PUBLIC_WHITEPAPER_URL=/kodr.pdf
 ```
