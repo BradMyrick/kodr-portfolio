@@ -1,0 +1,170 @@
+{
+  "hero": {
+    "badge": "Join the polyglot development revolution",
+    "headline": "Unify Your Polyglot Development with WebAssembly",
+    "subheading": "Build faster, deploy anywhere. The first platform designed for multi-language development teams.",
+    "description": "Compile Rust, Go, Python, and JavaScript to WebAssembly. Connect them seamlessly with Cap'n Proto RPC. Debug, test, and deploy from a unified browser-based IDE.",
+    "cta_primary": "Start Building",
+    "cta_secondary": "Watch Demo"
+  },
+  "problem": {
+    "title": "Modern Apps Need Multiple Languages",
+    "subtitle": "But Integration is Painful",
+    "points": [
+      {
+        "title": "Toolchain Chaos",
+        "description": "Managing different build systems, package managers, and deployment processes for each language"
+      },
+      {
+        "title": "Performance Penalties",
+        "description": "FFI overhead, serialization costs, and memory inefficiencies at language boundaries"
+      },
+      {
+        "title": "Developer Friction",
+        "description": "Context-switching between IDEs, debugging across languages, and maintaining consistency"
+      }
+    ]
+  },
+  "solution": {
+    "title": "WebAssembly + Cap'n Proto RPC",
+    "subtitle": "Seamless Polyglot Development",
+    "description": "One platform. All languages. Zero friction.",
+    "points": [
+      {
+        "title": "Universal Compilation",
+        "description": "Every language compiles to the same WASM target"
+      },
+      {
+        "title": "Zero-Copy Communication",
+        "description": "Cap'n Proto RPC eliminates serialization overhead"
+      },
+      {
+        "title": "Unified Development",
+        "description": "One IDE for all languages with cross-language debugging"
+      }
+    ]
+  },
+  "features": [
+    {
+      "title": "Universal WASM Compilation",
+      "description": "Compile Rust, Go, Python, JavaScript, and more to WebAssembly with a unified pipeline. Near-native performance, guaranteed.",
+      "icon": "🚀",
+      "metrics": "95% native speed"
+    },
+    {
+      "title": "Zero-Friction Integration",
+      "description": "Cap'n Proto RPC provides type-safe, zero-copy communication between modules. No more serialization overhead.",
+      "icon": "⚡",
+      "metrics": "10x faster than JSON"
+    },
+    {
+      "title": "Browser-Native IDE",
+      "description": "Code, compile, debug, and deploy from your browser. Cross-language debugging with unified stack traces.",
+      "icon": "💻",
+      "metrics": "100% cloud-based"
+    },
+    {
+      "title": "Deploy Everywhere",
+      "description": "Same WASM modules run in browsers, edge workers, cloud functions, and native apps. Write once, run anywhere.",
+      "icon": "🌍",
+      "metrics": "4+ platforms"
+    }
+  ],
+  "performance": {
+    "title": "Performance That Speaks for Itself",
+    "subtitle": "Based on real-world benchmarks",
+    "metrics": [
+      {
+        "label": "Faster Encoding",
+        "value": "3-5x",
+        "comparison": "vs JSON"
+      },
+      {
+        "label": "Faster Decoding",
+        "value": "5-10x",
+        "comparison": "vs JSON"
+      },
+      {
+        "label": "Memory Reduction",
+        "value": "60%",
+        "comparison": "vs traditional"
+      },
+      {
+        "label": "Network Savings",
+        "value": "50%",
+        "comparison": "bandwidth usage"
+      }
+    ]
+  },
+  "technical": {
+    "title": "Built on Proven Technology",
+    "points": [
+      {
+        "title": "WebAssembly",
+        "description": "95%+ browser support. Used by Adobe, AutoCAD, Google Earth, and more.",
+        "icon": "🔧"
+      },
+      {
+        "title": "Cap'n Proto",
+        "description": "Battle-tested at Cloudflare, serving billions of requests daily.",
+        "icon": "⚙️"
+      },
+      {
+        "title": "Security First",
+        "description": "WASM sandbox isolation. Capability-based security. Memory safe by default.",
+        "icon": "🔒"
+      }
+    ]
+  },
+  "markets": {
+    "title": "Perfect for Modern Development Teams",
+    "segments": [
+      {
+        "title": "Blockchain & Web3",
+        "description": "Rust for performance, Solidity for contracts, TypeScript for UIs - all in one platform",
+        "icon": "⛓️"
+      },
+      {
+        "title": "Edge Computing",
+        "description": "Deploy to Cloudflare Workers, Fastly Compute@Edge, and more with native WASM support",
+        "icon": "☁️"
+      },
+      {
+        "title": "High-Performance Web",
+        "description": "Gaming, CAD, scientific computing - bring native performance to the browser",
+        "icon": "🎮"
+      }
+    ]
+  },
+  "differentiators": {
+    "title": "Why Kodr.pro?",
+    "points": [
+      "First platform designed specifically for polyglot WASM development",
+      "Production-ready Cap'n Proto RPC optimized for WebAssembly",
+      "No more managing multiple build systems or deployment pipelines",
+      "Cross-language debugging with unified stack traces",
+      "Real-time collaboration with language-aware editing"
+    ]
+  },
+  "cta": {
+    "title": "Ready to Unify Your Development?",
+    "subtitle": "Join teams building the future with WebAssembly and Cap'n Proto RPC",
+    "primary": "Get Early Access",
+    "secondary": "Read Whitepaper"
+  },
+  "footer": {
+    "tagline": "The future of polyglot development is here.",
+    "links": {
+      "product": ["Features", "Pricing", "Documentation", "Roadmap"],
+      "developers": ["API Reference", "SDKs", "Examples", "Blog"],
+      "company": ["About", "Careers", "Contact", "Press"],
+      "legal": ["Privacy", "Terms", "Security"]
+    }
+  },
+  "code_examples": {
+    "rust": "// Rust module compiled to WASM\n#[wasm_bindgen]\npub fn process_data(input: &[u8]) -> Vec<u8> {\n    // High-performance data processing\n    let result = compute_intensive_task(input);\n    result.to_vec()\n}",
+    "go": "// Go service with Cap'n Proto RPC\nfunc (s *DataService) Process(\n    ctx context.Context,\n    call capnp.DataService_process,\n) error {\n    // Zero-copy message handling\n    return processWithCapnp(call)\n}",
+    "python": "# Python AI model in WASM\nimport numpy as np\nfrom kodr import wasm_export\n\n@wasm_export\ndef predict(features):\n    # Run ML inference in WASM\n    return model.predict(features)",
+    "javascript": "// JavaScript orchestrating everything\nimport { RustModule, GoService, PythonAI } from './wasm';\n\nasync function processRequest(data) {\n  const processed = await RustModule.process_data(data);\n  const enriched = await GoService.enrich(processed);\n  return PythonAI.predict(enriched);\n}"
+  }
+}
