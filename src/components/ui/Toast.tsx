@@ -26,7 +26,7 @@ const Toast: React.FC<ToastProps> = ({
   useEffect(() => {
     // Show toast with animation
     const showTimer = setTimeout(() => setIsVisible(true), 100);
-    
+
     // Auto-hide toast
     const hideTimer = setTimeout(() => {
       handleRemove();
@@ -87,8 +87,8 @@ const Toast: React.FC<ToastProps> = ({
         'pointer-events-auto w-full max-w-sm overflow-hidden rounded-lg shadow-lg',
         'transform transition-all duration-300 ease-in-out',
         getStyles(),
-        isVisible && !isRemoving 
-          ? 'translate-x-0 opacity-100' 
+        isVisible && !isRemoving
+          ? 'translate-x-0 opacity-100'
           : 'translate-x-full opacity-0'
       )}
       role="alert"

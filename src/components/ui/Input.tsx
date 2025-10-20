@@ -3,8 +3,8 @@ import { cn } from '@/utils';
 import { InputProps } from '@/types';
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ 
-    className, 
+  ({
+    className,
     type = 'text',
     placeholder,
     value,
@@ -12,24 +12,29 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
     error,
     disabled = false,
     required = false,
-    ...props 
+    ...props
   }, ref) => {
     const [focused, setFocused] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
 
     // Sanitize input to prevent XSS
-    const sanitizeInput = useCallback((input: string): string => {
+    const sanitizeInput = useCallback((input: string, shouldTrim = false): string => {
       // Remove potentially dangerous characters
-      return input
+      let sanitized = input
         .replace(/[<>]/g, '') // Remove < and >
         .replace(/javascript:/gi, '') // Remove javascript: protocol
-        .replace(/on\w+=/gi, '') // Remove event handlers
-        .trim();
+        .replace(/on\w+=/gi, ''); // Remove event handlers
+
+      // Only trim on blur, not during typing
+      if (shouldTrim) {
+        sanitized = sanitized.trim();
+      }
+
+      return sanitized;
     }, []);
 
     const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-      const sanitizedValue = sanitizeInput(e.target.value);
-      // Update the value with sanitized input
+      const sanitizedValue = sanitizeInput(e.target.value, false); // Don't trim during typing
       e.target.value = sanitizedValue;
       if (onChange) {
         onChange(e);
@@ -37,7 +42,18 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
     }, [onChange, sanitizeInput]);
 
     const handleFocus = () => setFocused(true);
-    const handleBlur = () => setFocused(false);
+
+    const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+      setFocused(false);
+      // Trim on blur to clean up leading/trailing spaces
+      const trimmedValue = sanitizeInput(e.target.value, true);
+      if (trimmedValue !== e.target.value) {
+        e.target.value = trimmedValue;
+        if (onChange) {
+          onChange(e as any);
+        }
+      }
+    };
 
     const togglePasswordVisibility = () => {
       setShowPassword(!showPassword);
@@ -82,7 +98,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           autoCapitalize={type === 'password' ? 'off' : undefined}
           {...props}
         />
-        
+
         {/* Password visibility toggle */}
         {type === 'password' && (
           <button
@@ -103,7 +119,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             )}
           </button>
         )}
-        
+
         {/* Error message */}
         {error && (
           <p className="mt-1 text-sm text-red-600 dark:text-red-400" role="alert">
