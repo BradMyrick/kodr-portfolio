@@ -56,7 +56,7 @@ ${formData.useCase || 'Not specified'}
         message: message
       };
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/contact`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/contact`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -196,8 +196,8 @@ ${formData.useCase || 'Not specified'}
               type="button"
               onClick={() => toggleLanguage(lang.value)}
               className={`px-4 py-2 rounded-lg border transition-all ${formData.languages.includes(lang.value)
-                  ? 'bg-cyan-600 border-cyan-500 text-white'
-                  : 'bg-gray-900 border-gray-700 text-gray-400 hover:border-gray-600'
+                ? 'bg-cyan-600 border-cyan-500 text-white'
+                : 'bg-gray-900 border-gray-700 text-gray-400 hover:border-gray-600'
                 }`}
             >
               {lang.label}
