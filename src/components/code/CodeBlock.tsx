@@ -16,11 +16,11 @@ interface CodeBlockProps {
   className?: string;
 }
 
-const CodeBlock: React.FC<CodeBlockProps> = ({ 
-  code, 
-  language, 
+const CodeBlock: React.FC<CodeBlockProps> = ({
+  code,
+  language,
   showLineNumbers = false,
-  className = '' 
+  className = ''
 }) => {
   const codeRef = useRef<HTMLElement>(null);
 
@@ -35,7 +35,10 @@ const CodeBlock: React.FC<CodeBlockProps> = ({
   return (
     <div className={`relative overflow-hidden rounded-lg bg-gray-900 dark:bg-gray-950 ${className}`}>
       <div className="overflow-x-auto">
-        <pre className={`language-${language} m-0 p-4 ${showLineNumbers ? 'pl-12' : ''}`}>
+        <pre
+          className={`language-${language} m-0 p-4 ${showLineNumbers ? 'pl-12' : ''}`}
+          suppressHydrationWarning
+        >
           {showLineNumbers && (
             <div className="absolute left-0 top-0 bottom-0 w-10 bg-gray-800/50 dark:bg-gray-900/50 border-r border-gray-800">
               {lines.map((_, index) => (
@@ -49,10 +52,11 @@ const CodeBlock: React.FC<CodeBlockProps> = ({
               ))}
             </div>
           )}
-          <code 
-            ref={codeRef} 
+          <code
+            ref={codeRef}
             className={`language-${language} text-sm`}
             style={{ tabSize: 2 }}
+            suppressHydrationWarning
           >
             {code}
           </code>

@@ -37,16 +37,37 @@ const EarlyAccessForm: React.FC<EarlyAccessFormProps> = ({ className = '' }) => 
     setError('');
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/early-access`, {
+      // Convert early access form data to contact format
+      const message = `
+Early Access Request
+
+Company: ${formData.company || 'Not specified'}
+Role: ${formData.role || 'Not specified'}
+Languages: ${formData.languages.length > 0 ? formData.languages.join(', ') : 'Not specified'}
+
+Use Case:
+${formData.useCase || 'Not specified'}
+      `.trim();
+
+      const contactData = {
+        name: formData.name,
+        email: formData.email,
+        subject: 'Early Access Request',
+        message: message
+      };
+
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/contact`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(contactData),
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        throw new Error('Failed to submit');
+        throw new Error(data.error || 'Failed to submit');
       }
 
       setSuccess(true);
@@ -68,7 +89,8 @@ const EarlyAccessForm: React.FC<EarlyAccessFormProps> = ({ className = '' }) => 
         });
       }
     } catch (err) {
-      setError('Something went wrong. Please try again or email us directly.');
+      const errorMessage = err instanceof Error ? err.message : 'Something went wrong. Please try again or email us directly at contact@kodr.pro';
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -92,9 +114,15 @@ const EarlyAccessForm: React.FC<EarlyAccessFormProps> = ({ className = '' }) => 
       >
         <div className="text-4xl mb-4">🎉</div>
         <h3 className="text-2xl font-bold text-white mb-2">You're on the list!</h3>
-        <p className="text-gray-300">
-          We'll reach out soon with early access to the platform. Check your email for next steps.
+        <p className="text-gray-300 mb-4">
+          Thank you for your interest in Kodr.pro! We've received your early access request and will reach out soon.
         </p>
+        <button
+          onClick={() => setSuccess(false)}
+          className="text-cyan-400 hover:text-cyan-300 underline text-sm"
+        >
+          Submit another request
+        </button>
       </motion.div>
     );
   }
@@ -167,11 +195,10 @@ const EarlyAccessForm: React.FC<EarlyAccessFormProps> = ({ className = '' }) => 
               key={lang.value}
               type="button"
               onClick={() => toggleLanguage(lang.value)}
-              className={`px-4 py-2 rounded-lg border transition-all ${
-                formData.languages.includes(lang.value)
+              className={`px-4 py-2 rounded-lg border transition-all ${formData.languages.includes(lang.value)
                   ? 'bg-cyan-600 border-cyan-500 text-white'
                   : 'bg-gray-900 border-gray-700 text-gray-400 hover:border-gray-600'
-              }`}
+                }`}
             >
               {lang.label}
             </button>
@@ -188,7 +215,7 @@ const EarlyAccessForm: React.FC<EarlyAccessFormProps> = ({ className = '' }) => 
           onChange={(e) => setFormData({ ...formData, useCase: e.target.value })}
           placeholder="Tell us about your use case..."
           rows={3}
-          className="w-full px-4 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+          className="w-full px-4 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-500 resize-none"
         />
       </div>
 

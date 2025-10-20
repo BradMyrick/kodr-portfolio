@@ -41,7 +41,7 @@ NEXT_PUBLIC_WHITEPAPER_URL=/kodr.pdf
 ```
 
 ## Early Access Backend
-The early access form posts to `/early-access` endpoint which:
+The early access form posts to `/api/v1/contact` which:
 - Stores signups in BadgerDB
 - Tracks languages of interest
 - Records use cases for product development
