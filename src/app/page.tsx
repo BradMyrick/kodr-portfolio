@@ -12,7 +12,7 @@ import copyContent from '../../content/copy.json';
 
 const LandingPage = () => {
   const [showVideoModal, setShowVideoModal] = useState(false);
-  
+
   const codeTabs = [
     {
       language: 'rust',
@@ -51,25 +51,25 @@ const LandingPage = () => {
                 <span className="text-white font-bold text-sm">K</span>
               </div>
               <span className="font-semibold text-white text-lg">
-                {copyContent.hero.headline.split(' ')[0]}.pro
+                kodr.pro
               </span>
             </div>
-            
+
             <div className="hidden md:flex items-center space-x-8">
               <a href="#features" className="text-gray-300 hover:text-white transition-colors">Features</a>
               <a href="#performance" className="text-gray-300 hover:text-white transition-colors">Performance</a>
               <a href="#demo" className="text-gray-300 hover:text-white transition-colors">Demo</a>
               <a href="/kodr.pdf" className="text-gray-300 hover:text-white transition-colors">Whitepaper</a>
             </div>
-            
+
             <div className="flex items-center space-x-4">
               <a href={process.env.NEXT_PUBLIC_GITHUB_URL} target="_blank" rel="noopener noreferrer">
                 <Button variant="ghost" size="sm" className="text-gray-300 hover:text-white">
                   ⭐ Star on GitHub
                 </Button>
               </a>
-              <Button 
-                size="sm" 
+              <Button
+                size="sm"
                 className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700"
                 onClick={() => document.getElementById('early-access')?.scrollIntoView({ behavior: 'smooth' })}
               >
@@ -87,11 +87,11 @@ const LandingPage = () => {
           <div className="absolute -top-40 -right-32 w-96 h-96 bg-cyan-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-pulse"></div>
           <div className="absolute -bottom-40 -left-32 w-96 h-96 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-pulse animation-delay-2000"></div>
         </div>
-        
+
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center space-y-8">
             {/* Badge */}
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
@@ -100,9 +100,9 @@ const LandingPage = () => {
               <span className="animate-pulse mr-2">🚀</span>
               {copyContent.hero.badge}
             </motion.div>
-            
+
             {/* Main headline */}
-            <motion.h1 
+            <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
@@ -112,9 +112,9 @@ const LandingPage = () => {
                 {copyContent.hero.headline}
               </span>
             </motion.h1>
-            
+
             {/* Subheadline */}
-            <motion.p 
+            <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
@@ -122,9 +122,9 @@ const LandingPage = () => {
             >
               {copyContent.hero.subheading}
             </motion.p>
-            
+
             {/* Description */}
-            <motion.p 
+            <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.3 }}
@@ -132,25 +132,25 @@ const LandingPage = () => {
             >
               {copyContent.hero.description}
             </motion.p>
-            
+
             {/* CTA Buttons */}
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.4 }}
               className="flex flex-col sm:flex-row gap-4 justify-center items-center mt-10"
             >
-              <Button 
-                size="lg" 
+              <Button
+                size="lg"
                 className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white px-8 py-4 text-lg font-semibold shadow-xl"
                 onClick={() => document.getElementById('early-access')?.scrollIntoView({ behavior: 'smooth' })}
               >
                 Get Early Access
               </Button>
               <Link href="/kodr.pdf" target="_blank">
-                <Button 
-                  size="lg" 
-                  variant="outline" 
+                <Button
+                  size="lg"
+                  variant="outline"
                   className="border-2 border-cyan-600 text-cyan-400 hover:bg-cyan-900/50 px-8 py-4 text-lg font-semibold"
                 >
                   Read Whitepaper
@@ -158,9 +158,9 @@ const LandingPage = () => {
               </Link>
             </motion.div>
           </div>
-          
+
           {/* Code Tabs Demo */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.5 }}
@@ -191,7 +191,7 @@ const LandingPage = () => {
                 ))}
               </div>
             </div>
-            
+
             {/* Solution */}
             <div>
               <h2 className="text-3xl font-bold mb-6 text-white">{copyContent.solution.title}</h2>
@@ -255,7 +255,7 @@ const LandingPage = () => {
               {copyContent.performance.subtitle}
             </p>
           </div>
-          
+
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {copyContent.performance.metrics.map((metric, i) => (
               <MetricCard
@@ -349,7 +349,7 @@ const LandingPage = () => {
               Be among the first to experience the future of polyglot development.
             </p>
           </div>
-          
+
           <div className="bg-gray-950/50 backdrop-blur-sm rounded-2xl p-8 border border-gray-800">
             <EarlyAccessForm />
           </div>
@@ -373,7 +373,7 @@ const LandingPage = () => {
                 {copyContent.footer.tagline}
               </p>
             </div>
-            
+
             <div>
               <h4 className="font-semibold text-white mb-4">Product</h4>
               <ul className="space-y-2">
@@ -383,7 +383,7 @@ const LandingPage = () => {
                 <li><a href="#" className="hover:text-white transition-colors">Integrations</a></li>
               </ul>
             </div>
-            
+
             <div>
               <h4 className="font-semibold text-white mb-4">Resources</h4>
               <ul className="space-y-2">
@@ -393,7 +393,7 @@ const LandingPage = () => {
                 <li><a href="#" className="hover:text-white transition-colors">Community</a></li>
               </ul>
             </div>
-            
+
             <div>
               <h4 className="font-semibold text-white mb-4">Company</h4>
               <ul className="space-y-2">
@@ -404,7 +404,7 @@ const LandingPage = () => {
               </ul>
             </div>
           </div>
-          
+
           <div className="border-t border-gray-800 mt-8 pt-8 text-center">
             <p className="text-gray-400">
               © 2025 Kodr.pro. All rights reserved.
