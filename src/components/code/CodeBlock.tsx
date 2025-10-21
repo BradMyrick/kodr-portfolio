@@ -34,13 +34,14 @@ const CodeBlock: React.FC<CodeBlockProps> = ({
 
   return (
     <div className={`relative overflow-hidden rounded-lg bg-gray-900 dark:bg-gray-950 ${className}`}>
-      <div className="overflow-x-auto">
+      {/* Use fixed height so content doesn't jump and allow scrolling */}
+      <div className="overflow-auto h-[400px] flex items-start justify-center">
         <pre
-          className={`language-${language} m-0 p-4 ${showLineNumbers ? 'pl-12' : ''}`}
+          className={`language-${language} m-0 p-4 relative w-full`} // add 'relative' here
           suppressHydrationWarning
         >
           {showLineNumbers && (
-            <div className="absolute left-0 top-0 bottom-0 w-10 bg-gray-800/50 dark:bg-gray-900/50 border-r border-gray-800">
+            <div className="absolute left-0 top-0 w-10 h-full bg-gray-800/50 dark:bg-gray-900/50 border-r border-gray-800">
               {lines.map((_, index) => (
                 <div
                   key={index}
@@ -54,8 +55,8 @@ const CodeBlock: React.FC<CodeBlockProps> = ({
           )}
           <code
             ref={codeRef}
-            className={`language-${language} text-sm`}
-            style={{ tabSize: 2 }}
+            className={`language-${language} text-sm block`}
+            style={{ tabSize: 2, marginLeft: showLineNumbers ? '2.5rem' : undefined }}
             suppressHydrationWarning
           >
             {code}
@@ -64,6 +65,7 @@ const CodeBlock: React.FC<CodeBlockProps> = ({
       </div>
     </div>
   );
+
 };
 
 export default CodeBlock;

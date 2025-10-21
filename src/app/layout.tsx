@@ -12,7 +12,7 @@ const inter = Inter({
 export const metadata: Metadata = {
   metadataBase: new URL('https://kodr.pro'),
   title: {
-    default: "Kodr.pro - Unifying Polyglot Development Through WebAssembly",
+    default: "Kodr.pro - Every Language. One Platform.",
     template: "%s | Kodr.pro"
   },
   description: "The first comprehensive polyglot development platform built on WebAssembly and Cap'n Proto RPC. Seamlessly integrate Rust, Go, Python, JavaScript, and more through a unified compilation pipeline and browser-based IDE.",

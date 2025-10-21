@@ -1,7 +1,7 @@
 {
     "name": "Kodr.pro - WebAssembly Polyglot Development",
     "short_name": "Kodr",
-    "description": "Unifying polyglot development through WebAssembly",
+    "description": "Every Language. One Platform.",
     "start_url": "/",
     "display": "standalone",
     "background_color": "#0a0a0a",
