@@ -1,9 +1,9 @@
 {
   "hero": {
     "badge": "Join the polyglot development revolution",
-    "headline": "Unify Your Polyglot Development with WebAssembly",
+    "headline": "Every Language. One Platform.",
     "subheading": "Build faster, deploy anywhere. The first platform designed for multi-language development teams.",
-    "description": "Compile Rust, Go, Python, and JavaScript to WebAssembly. Connect them seamlessly with Cap'n Proto RPC. Debug, test, and deploy from a unified browser-based IDE.",
+    "description": "Compile Rust, Go, Python, JavaScript, and More to WebAssembly. Connect them seamlessly with 0 copy RPC. Debug, test, and deploy from a unified browser-based IDE.",
     "cta_primary": "Start Building",
     "cta_secondary": "Watch Demo"
   },
@@ -155,16 +155,46 @@
   "footer": {
     "tagline": "The future of polyglot development is here.",
     "links": {
-      "product": ["Features", "Pricing", "Documentation", "Roadmap"],
-      "developers": ["API Reference", "SDKs", "Examples", "Blog"],
-      "company": ["About", "Careers", "Contact", "Press"],
-      "legal": ["Privacy", "Terms", "Security"]
+      "product": [
+        "Features",
+        "Pricing",
+        "Documentation",
+        "Roadmap"
+      ],
+      "developers": [
+        "API Reference",
+        "SDKs",
+        "Examples",
+        "Blog"
+      ],
+      "company": [
+        "About",
+        "Careers",
+        "Contact",
+        "Press"
+      ],
+      "legal": [
+        "Privacy",
+        "Terms",
+        "Security"
+      ]
     }
   },
   "code_examples": {
-    "rust": "// Rust module compiled to WASM\n#[wasm_bindgen]\npub fn process_data(input: &[u8]) -> Vec<u8> {\n    // High-performance data processing\n    let result = compute_intensive_task(input);\n    result.to_vec()\n}",
-    "go": "// Go service with Cap'n Proto RPC\nfunc (s *DataService) Process(\n    ctx context.Context,\n    call capnp.DataService_process,\n) error {\n    // Zero-copy message handling\n    return processWithCapnp(call)\n}",
-    "python": "# Python AI model in WASM\nimport numpy as np\nfrom kodr import wasm_export\n\n@wasm_export\ndef predict(features):\n    # Run ML inference in WASM\n    return model.predict(features)",
-    "javascript": "// JavaScript orchestrating everything\nimport { RustModule, GoService, PythonAI } from './wasm';\n\nasync function processRequest(data) {\n  const processed = await RustModule.process_data(data);\n  const enriched = await GoService.enrich(processed);\n  return PythonAI.predict(enriched);\n}"
+    "rust": "// Rust: Data transformation core (compiled to WebAssembly Component)\nuse wasm_bindgen::prelude::*;\n\n#[wasm_bindgen]\npub fn compress_signal(data: &[f32]) -> Vec<f32> {\n    // Example of a compute-heavy DSP operation\n    let filtered: Vec<f32> = data.iter().map(|x| (x * 0.85).sin()).collect();\n    filtered\n}\n",
+    "go": "// Go: Cap’n Proto RPC service exposing Rust WASM module\npackage main\n\nimport (\n  \"context\"\n  capnp \"capnproto.org/go/capnp/v3\"\n  wasm \"github.com/kodr/runtime/wasm\"\n)\n\ntype DSPService struct{}\n\nfunc (s *DSPService) Process(ctx context.Context, call capnp.DSPService_process) error {\n  input, _ := call.Params.Input()\n  data := parseFloats(input)\n  // Call compiled Rust WASM function\n  processed := wasm.Invoke[[]float32](\"compress_signal\", data)\n  call.Results.SetOutput(toBytes(processed))\n  return nil\n}\n",
+    "python": "# Python: AI model consuming Go service results via Cap’n Proto RPC\nfrom kodr.rpc import connect\nfrom kodr.wasm import export\nimport numpy as np\n\n@export\ndef predict_enhanced_waveform(samples: list[float]):\n    dsp = connect('go://DSPService')\n    enhanced = dsp.Process(samples)\n    # Lightweight neural enhancement (inside WASM runtime)\n    arr = np.array(enhanced)\n    return arr / np.max(np.abs(arr))\n",
+    "javascript": "// JS: Browser orchestrator running all modules together\nimport { DSPService, PythonPredictor } from './wasm'\n\nasync function analyze(audioBuffer) {\n  const rawData = new Float32Array(audioBuffer)\n  const processed = await DSPService.process(rawData)\n  const prediction = await PythonPredictor.predict_enhanced_waveform(processed)\n  console.log('AI Prediction:', prediction)\n}\n\n// Unified cross-language orchestration\nawait analyze(await fetch('/samples/waveform.raw').then(r => r.arrayBuffer()))\n"
+  },
+  "demo": {
+    "title": "Unified Polyglot Workflow",
+    "subtitle": "Every language. One runtime.",
+    "footerNote": "Click through the tabs to see Rust, Go, Python, and JavaScript working together in real time.",
+    "explanations": {
+      "rust": "Rust handles the performance-critical part — compiling natively to WebAssembly for near-C performance in your browser.",
+      "go": "Go exposes the Rust module via Cap’n Proto RPC, passing zero-copy data structures between runtimes.",
+      "python": "Python runs AI logic directly within the same WASM runtime, proving that high-level code can coexist with low-level computation.",
+      "javascript": "JavaScript orchestrates every module, showing how kodr.pro unifies all languages in a single interface."
+    }
   }
 }
