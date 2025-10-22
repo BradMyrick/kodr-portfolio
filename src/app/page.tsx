@@ -45,8 +45,12 @@ const LandingPage = () => {
               <a href="/kodr.pdf" className="text-gray-300 hover:text-white transition">Whitepaper</a>
             </div>
             <div className="flex items-center space-x-4">
-              <a href={process.env.NEXT_PUBLIC_GITHUB_URL} target="_blank" rel="noopener noreferrer">
-                <Button variant="ghost" size="sm" className="text-gray-300 hover:text-white">
+              <a href="https://github.com/kodr-pro" target="_blank" rel="noopener noreferrer">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="border-gray-700 text-gray-300 hover:border-gray-500 hover:text-white"
+                >
                   ⭐ Star on GitHub
                 </Button>
               </a>
