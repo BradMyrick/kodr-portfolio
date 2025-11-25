@@ -6,10 +6,8 @@ export default function Page() {
   useEffect(() => {
     const initTerminal = async () => {
       try {
-        // Import the wasm-bindgen JS glue
-        const mod = await import('@/public/terminal/kodr_portfolio_terminal');
-
-        // IMPORTANT: first call the default initializer, which loads the .wasm
+        // @ts-ignore
+        const mod = await import('/terminal/kodr_portfolio_terminal.js');
         await mod.default();
 
         // Now call the exported wasm functions from Rust
