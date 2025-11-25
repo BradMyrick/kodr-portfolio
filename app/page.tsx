@@ -7,7 +7,7 @@ export default function Page() {
     const initTerminal = async () => {
       try {
         // @ts-ignore
-        const mod = await import('/terminal/kodr_portfolio_terminal.js');
+        const mod = await import('@/app/terminal/kodr_portfolio_terminal')
         await mod.default();
 
         // Now call the exported wasm functions from Rust
