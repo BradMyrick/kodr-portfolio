@@ -146,12 +146,12 @@ export function handle_key(key) {
 /**
  * @returns {string}
  */
-export function render_to_string() {
+export function render_to_ansi() {
     let deferred1_0;
     let deferred1_1;
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-        wasm.render_to_string(retptr);
+        wasm.render_to_ansi(retptr);
         var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
         var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
         deferred1_0 = r0;
