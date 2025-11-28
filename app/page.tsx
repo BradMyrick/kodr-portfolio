@@ -5,7 +5,6 @@ import { Terminal } from "@xterm/xterm";
 import "@xterm/xterm/css/xterm.css";
 import { WebLinksAddon } from "@xterm/addon-web-links";
 
-
 function calcTerminalSize(container: HTMLElement, fontSize: number) {
   const charWidth = fontSize * 0.575;
   const charHeight = fontSize * 1;
@@ -16,7 +15,6 @@ function calcTerminalSize(container: HTMLElement, fontSize: number) {
 
   return { cols, rows };
 }
-
 
 export default function Page() {
   const termRef = useRef<Terminal | null>(null);
@@ -36,7 +34,6 @@ export default function Page() {
     mq.addEventListener("change", apply);
     return () => mq.removeEventListener("change", apply);
   }, []);
-
 
   useEffect(() => {
     let mounted = true;
@@ -64,14 +61,13 @@ export default function Page() {
           disableStdin: false,
           convertEol: true,
         });
-        term.open(container);
 
+        term.open(container);
 
         const webLinksAddon = new WebLinksAddon((event, uri) => {
           window.open(uri, "_blank");
         });
         term.loadAddon(webLinksAddon);
-
 
         termRef.current = term;
         wasmRef.current = mod;
@@ -81,6 +77,16 @@ export default function Page() {
 
         const first = mod.render_to_ansi();
         term.write(first);
+
+        // Route keys from xterm to WASM app
+        const keyDisposable = term.onKey(({ domEvent }) => {
+          if (!wasmRef.current || !termRef.current) return;
+          wasmRef.current.handle_key(domEvent.key);
+          const ansi = wasmRef.current.render_to_ansi();
+          termRef.current.reset();
+          termRef.current.write(ansi);
+          domEvent.preventDefault();
+        });
 
         const handleResize = () => {
           if (!termRef.current || !wasmRef.current || !containerRef.current) return;
@@ -93,16 +99,6 @@ export default function Page() {
         };
 
         window.addEventListener("resize", handleResize);
-
-        const onKeyDown = (e: KeyboardEvent) => {
-          if (!wasmRef.current || !termRef.current) return;
-          wasmRef.current.handle_key(e.key);
-          const ansi = wasmRef.current.render_to_ansi();
-          termRef.current.reset();
-          termRef.current.write(ansi);
-        };
-
-        window.addEventListener("keydown", onKeyDown);
 
         const tickLoop = () => {
           if (!mounted || !wasmRef.current || !termRef.current) return;
@@ -118,7 +114,7 @@ export default function Page() {
 
         (window as any).__kodr_tui_cleanup = () => {
           window.removeEventListener("resize", handleResize);
-          window.removeEventListener("keydown", onKeyDown);
+          keyDisposable.dispose();
           term.dispose();
           mounted = false;
         };
@@ -137,7 +133,6 @@ export default function Page() {
     };
   }, [fontSize]);
 
-
   const sendKey = (key: string) => {
     if (!wasmRef.current || !termRef.current) return;
     wasmRef.current.handle_key(key);
@@ -146,13 +141,11 @@ export default function Page() {
     termRef.current.write(ansi);
   };
 
-
   return (
     <main className="min-h-screen bg-gradient-to-b from-gray-900 to-black p-8">
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col items-center justify-center mb-6">
           <div className="flex items-center gap-3">
-            {/* Example SVG or emoji icon */}
             <span className="text-3xl mb-[-2px]">🦀</span>
             <h1 className="text-5xl font-extrabold text-center bg-clip-text text-transparent bg-gradient-to-r from-yellow-400 via-blue-500 to-green-400 drop-shadow-lg">
               kodr.pro TUI
@@ -208,8 +201,6 @@ export default function Page() {
             </button>
           </div>
         )}
-
-
       </div>
     </main>
   );
