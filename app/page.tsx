@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Terminal } from "@xterm/xterm";
 import "@xterm/xterm/css/xterm.css";
+import { WebLinksAddon } from "@xterm/addon-web-links";
 
 
 function calcTerminalSize(container: HTMLElement, fontSize: number) {
@@ -63,19 +64,14 @@ export default function Page() {
           disableStdin: false,
           convertEol: true,
         });
-
         term.open(container);
 
-        // define the handler once so we can remove it later
-        const blurOnMouseDown = () => {
-          const textarea = container.querySelector("textarea");
-          if (textarea && document.activeElement === textarea) {
-            (textarea as HTMLTextAreaElement).blur();
-          }
-        };
 
-        // attach it
-        container.addEventListener("mousedown", blurOnMouseDown);
+        const webLinksAddon = new WebLinksAddon((event, uri) => {
+          window.open(uri, "_blank");
+        });
+        term.loadAddon(webLinksAddon);
+
 
         termRef.current = term;
         wasmRef.current = mod;
@@ -104,7 +100,6 @@ export default function Page() {
           const ansi = wasmRef.current.render_to_ansi();
           termRef.current.reset();
           termRef.current.write(ansi);
-          e.preventDefault();
         };
 
         window.addEventListener("keydown", onKeyDown);
@@ -124,7 +119,6 @@ export default function Page() {
         (window as any).__kodr_tui_cleanup = () => {
           window.removeEventListener("resize", handleResize);
           window.removeEventListener("keydown", onKeyDown);
-          container.removeEventListener("mousedown", blurOnMouseDown);
           term.dispose();
           mounted = false;
         };
