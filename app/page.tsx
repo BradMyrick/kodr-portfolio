@@ -23,6 +23,15 @@ export default function Page() {
   const [isMobile, setIsMobile] = useState(false);
   const [fontSize, setFontSize] = useState(22); // initial desktop
 
+  // Centralized app key handler used by terminal + window + buttons
+  const handleAppKey = (key: string) => {
+    if (!wasmRef.current || !termRef.current) return;
+    wasmRef.current.handle_key(key);
+    const ansi = wasmRef.current.render_to_ansi();
+    termRef.current.reset();
+    termRef.current.write(ansi);
+  };
+
   useEffect(() => {
     const mq = window.matchMedia("(max-width: 700px)");
     const apply = () => {
@@ -42,7 +51,7 @@ export default function Page() {
         const mod = await import("@/app/terminal/kodr_portfolio_terminal");
         await mod.default();
 
-        // Import WebLinksAddon only on the client
+        // Import WebLinksAddon only on client to avoid `self` issues on SSR
         const { WebLinksAddon } = await import("@xterm/addon-web-links");
 
         const container = containerRef.current;
@@ -65,6 +74,8 @@ export default function Page() {
         });
 
         term.open(container);
+
+        // Autofocus terminal so keys just work on load
         const textarea = container.querySelector("textarea");
         if (textarea) {
           (textarea as HTMLTextAreaElement).focus();
@@ -86,19 +97,37 @@ export default function Page() {
 
         // Route keys from xterm to WASM app
         const keyDisposable = term.onKey(({ domEvent }) => {
-          if (!wasmRef.current || !termRef.current) return;
-          wasmRef.current.handle_key(domEvent.key);
-          const ansi = wasmRef.current.render_to_ansi();
-          termRef.current.reset();
-          termRef.current.write(ansi);
+          handleAppKey(domEvent.key);
           domEvent.preventDefault();
         });
+
+        // Global fallback: when focus is not in xterm, still handle keys
+        const onWindowKeyDown = (e: KeyboardEvent) => {
+          const active = document.activeElement;
+          if (
+            active &&
+            active.tagName === "TEXTAREA" &&
+            active.closest("#terminal-container")
+          ) {
+            // xterm will handle this via onKey
+            return;
+          }
+          handleAppKey(e.key);
+        };
+        window.addEventListener("keydown", onWindowKeyDown);
 
         const handleResize = () => {
           if (!termRef.current || !wasmRef.current || !containerRef.current) return;
           const { cols, rows } = calcTerminalSize(containerRef.current, fontSize);
           termRef.current.resize(cols, rows);
-          wasmRef.current.resize(cols, rows);
+
+          // Prefer a dedicated resize API if it exists, otherwise re-init
+          if (typeof wasmRef.current.resize === "function") {
+            wasmRef.current.resize(cols, rows);
+          } else if (typeof wasmRef.current.init_terminal === "function") {
+            wasmRef.current.init_terminal(cols, rows);
+          }
+
           const ansi = wasmRef.current.render_to_ansi();
           termRef.current.reset();
           termRef.current.write(ansi);
@@ -120,6 +149,7 @@ export default function Page() {
 
         (window as any).__kodr_tui_cleanup = () => {
           window.removeEventListener("resize", handleResize);
+          window.removeEventListener("keydown", onWindowKeyDown);
           keyDisposable.dispose();
           term.dispose();
           mounted = false;
@@ -139,26 +169,23 @@ export default function Page() {
     };
   }, [fontSize]);
 
+  // Mobile buttons: send the same chars Rust expects for section jumps/help
   const sendKey = (key: string) => {
-    if (!wasmRef.current || !termRef.current) return;
-    wasmRef.current.handle_key(key);
-    const ansi = wasmRef.current.render_to_ansi();
-    termRef.current.reset();
-    termRef.current.write(ansi);
+    handleAppKey(key);
   };
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-gray-900 to-black p-8">
+    <main className="min-h-screen bg-gradient-to-b from-gray-900 to-black p-4 sm:p-8">
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col items-center justify-center mb-6">
           <div className="flex items-center gap-3">
             <span className="text-3xl mb-[-2px]">🦀</span>
-            <h1 className="text-5xl font-extrabold text-center bg-clip-text text-transparent bg-gradient-to-r from-yellow-400 via-blue-500 to-green-400 drop-shadow-lg">
+            <h1 className="text-4xl sm:text-5xl font-extrabold text-center bg-clip-text text-transparent bg-gradient-to-r from-yellow-400 via-blue-500 to-green-400 drop-shadow-lg">
               kodr.pro TUI
             </h1>
             <span className="text-3xl mb-[-2px]">🌐</span>
           </div>
-          <div className="text-xl font-semibold text-gray-300 mt-2 tracking-wide text-center">
+          <div className="text-lg sm:text-xl font-semibold text-gray-300 mt-2 tracking-wide text-center">
             Rust x WebAssembly &bull; Blockchain &bull; Founder
           </div>
         </div>
@@ -166,7 +193,7 @@ export default function Page() {
         <div
           ref={containerRef}
           id="terminal-container"
-          className="terminal-container box-border rounded-xl border border-green-500 overflow-hidden shadow-2xl bg-[#18181a]"
+          className="terminal-container box-border rounded-2xl border border-green-500/80 overflow-hidden shadow-[0_0_40px_rgba(34,197,94,0.35)] bg-[#18181a]"
           style={{
             width: isMobile ? "100%" : "1000px",
             height: isMobile ? "60vh" : "640px",
@@ -174,37 +201,54 @@ export default function Page() {
         />
 
         {isMobile && (
-          <div className="mt-4 flex flex-wrap gap-3 justify-center">
-            <button
-              className="px-4 py-2 rounded-md bg-gray-800 text-gray-100 border border-gray-600 text-sm"
-              onClick={() => sendKey("ArrowUp")}
-            >
-              ▲ Up
-            </button>
-            <button
-              className="px-4 py-2 rounded-md bg-gray-800 text-gray-100 border border-gray-600 text-sm"
-              onClick={() => sendKey("ArrowDown")}
-            >
-              ▼ Down
-            </button>
-            <button
-              className="px-4 py-2 rounded-md bg-gray-800 text-gray-100 border border-gray-600 text-sm"
-              onClick={() => sendKey("ArrowLeft")}
-            >
-              ◀ Prev
-            </button>
-            <button
-              className="px-4 py-2 rounded-md bg-gray-800 text-gray-100 border border-gray-600 text-sm"
-              onClick={() => sendKey("ArrowRight")}
-            >
-              ▶ Next
-            </button>
-            <button
-              className="px-4 py-2 rounded-md bg-yellow-500 text-black font-semibold text-sm"
-              onClick={() => sendKey("Enter")}
-            >
-              Enter
-            </button>
+          <div className="mt-5 flex flex-col items-center gap-3">
+            <div className="grid grid-cols-3 gap-3 w-full max-w-md">
+              <button
+                className="px-4 py-2 rounded-xl bg-gradient-to-br from-gray-800/90 to-gray-900/90 border border-white/10 text-gray-100 text-xs font-semibold shadow-lg shadow-black/40 active:scale-[0.97] transition-transform backdrop-blur flex flex-col items-center gap-1"
+                onClick={() => sendKey("1")}
+              >
+                <span className="text-sm leading-none">1</span>
+                <span className="text-[0.7rem] tracking-wide">Hero</span>
+              </button>
+              <button
+                className="px-4 py-2 rounded-xl bg-gradient-to-br from-gray-800/90 to-gray-900/90 border border-white/10 text-gray-100 text-xs font-semibold shadow-lg shadow-black/40 active:scale-[0.97] transition-transform backdrop-blur flex flex-col items-center gap-1"
+                onClick={() => sendKey("2")}
+              >
+                <span className="text-sm leading-none">2</span>
+                <span className="text-[0.7rem] tracking-wide">Journey</span>
+              </button>
+              <button
+                className="px-4 py-2 rounded-xl bg-gradient-to-br from-gray-800/90 to-gray-900/90 border border-white/10 text-gray-100 text-xs font-semibold shadow-lg shadow-black/40 active:scale-[0.97] transition-transform backdrop-blur flex flex-col items-center gap-1"
+                onClick={() => sendKey("3")}
+              >
+                <span className="text-sm leading-none">3</span>
+                <span className="text-[0.7rem] tracking-wide">Projects</span>
+              </button>
+            </div>
+
+            <div className="grid grid-cols-3 gap-3 w-full max-w-md">
+              <button
+                className="px-4 py-2 rounded-xl bg-gradient-to-br from-gray-800/90 to-gray-900/90 border border-white/10 text-gray-100 text-xs font-semibold shadow-lg shadow-black/40 active:scale-[0.97] transition-transform backdrop-blur flex flex-col items-center gap-1"
+                onClick={() => sendKey("4")}
+              >
+                <span className="text-sm leading-none">4</span>
+                <span className="text-[0.7rem] tracking-wide">Skills</span>
+              </button>
+              <button
+                className="px-4 py-2 rounded-xl bg-gradient-to-br from-gray-800/90 to-gray-900/90 border border-white/10 text-gray-100 text-xs font-semibold shadow-lg shadow-black/40 active:scale-[0.97] transition-transform backdrop-blur flex flex-col items-center gap-1"
+                onClick={() => sendKey("5")}
+              >
+                <span className="text-sm leading-none">5</span>
+                <span className="text-[0.7rem] tracking-wide">Contact</span>
+              </button>
+              <button
+                className="px-4 py-2 rounded-xl bg-gradient-to-br from-sky-500 to-indigo-600 border border-sky-300/40 text-white text-xs font-semibold shadow-lg shadow-sky-900/40 active:scale-[0.97] transition-transform flex flex-col items-center gap-1"
+                onClick={() => sendKey("h")}
+              >
+                <span className="text-sm leading-none">?</span>
+                <span className="text-[0.7rem] tracking-wide">Help</span>
+              </button>
+            </div>
           </div>
         )}
       </div>
