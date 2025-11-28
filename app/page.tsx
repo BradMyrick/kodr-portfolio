@@ -65,6 +65,10 @@ export default function Page() {
         });
 
         term.open(container);
+        const textarea = container.querySelector("textarea");
+        if (textarea) {
+          (textarea as HTMLTextAreaElement).focus();
+        }
 
         const webLinksAddon = new WebLinksAddon((event, uri) => {
           window.open(uri, "_blank");
