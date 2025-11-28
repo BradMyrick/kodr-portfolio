@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Terminal } from "@xterm/xterm";
 import "@xterm/xterm/css/xterm.css";
-import { WebLinksAddon } from "@xterm/addon-web-links";
 
 function calcTerminalSize(container: HTMLElement, fontSize: number) {
   const charWidth = fontSize * 0.575;
@@ -42,6 +41,9 @@ export default function Page() {
       try {
         const mod = await import("@/app/terminal/kodr_portfolio_terminal");
         await mod.default();
+
+        // Import WebLinksAddon only on the client
+        const { WebLinksAddon } = await import("@xterm/addon-web-links");
 
         const container = containerRef.current;
         if (!container) return;
