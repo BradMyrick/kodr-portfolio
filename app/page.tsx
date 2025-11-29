@@ -209,10 +209,15 @@ export default function Page() {
             </h1>
             <span className="text-3xl -mb-0.5">🌐</span>
           </div>
-          <div className="text-lg sm:text-xl font-semibold text-gray-300 mt-2 tracking-wide text-center">
-            Built with Rust &bull; WebAssembly
+
+          <div className="mt-2 text-center text-sm sm:text-base font-semibold text-gray-300 tracking-wide">
+            Built with Rust &bull; WebAssembly by{" "}
+            <span className="inline-block bg-clip-text text-transparent bg-linear-to-r from-emerald-400 via-cyan-400 to-blue-500 drop-shadow-md">
+              Brad Myrick
+            </span>
           </div>
         </div>
+
 
         <div
           ref={containerRef}
