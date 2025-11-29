@@ -193,7 +193,70 @@ export default function Page() {
     };
   }, [fontSize]);
 
-  // Mobile buttons: send the same chars Rust expects for section jumps/help
+  // If mobile: show simple landing instead of TUI
+  if (isMobile) {
+    return (
+      <main className="min-h-screen bg-linear-to-b from-gray-900 via-black to-gray-950 px-4 py-10">
+        <div className="max-w-xl mx-auto flex flex-col items-center text-center">
+          <div className="flex items-center gap-3 mb-4">
+            <span className="text-3xl -mb-0.5">🦀</span>
+            <h1 className="text-3xl font-extrabold bg-clip-text text-transparent bg-linear-to-r from-yellow-400 via-blue-500 to-green-400 drop-shadow-lg">
+              kodr.pro TUI
+            </h1>
+            <span className="text-3xl -mb-0.5">🌐</span>
+          </div>
+
+          <p className="text-sm uppercase tracking-[0.2em] text-gray-400 mb-3">
+            Built with Rust · WebAssembly
+          </p>
+
+          <p className="text-base text-gray-200 mb-6">
+            This site is an interactive terminal UI built in Rust and compiled to WebAssembly.
+            For the full experience (keyboard navigation, animations, and links), please visit
+            on a desktop browser.
+          </p>
+
+          <div className="w-full h-px bg-linear-to-r from-transparent via-emerald-500/60 to-transparent mb-6" />
+
+          <div className="w-full space-y-3">
+            {/* Fix these hrefs to your real profiles */}
+            <a
+              href="https://github.com/bradmyrick"
+              target="_blank"
+              rel="noreferrer"
+              className="block w-full px-4 py-3 rounded-xl bg-linear-to-r from-gray-800 to-gray-900 border border-white/10 text-gray-100 text-sm font-medium shadow-lg shadow-black/40 active:scale-[0.97] transition-transform"
+            >
+              GitHub
+            </a>
+            <a
+              href="https://x.com/kodr_eth"
+              target="_blank"
+              rel="noreferrer"
+              className="block w-full px-4 py-3 rounded-xl bg-linear-to-r from-sky-500 to-blue-600 border border-sky-300/40 text-white text-sm font-medium shadow-lg shadow-sky-900/40 active:scale-[0.97] transition-transform"
+            >
+              Twitter / X
+            </a>
+            <a
+              href="https://www.linkedin.com/in/brad-myrick-35327b258"
+              target="_blank"
+              rel="noreferrer"
+              className="block w-full px-4 py-3 rounded-xl bg-linear-to-r from-indigo-500 to-purple-600 border border-indigo-300/40 text-white text-sm font-medium shadow-lg shadow-indigo-900/40 active:scale-[0.97] transition-transform"
+            >
+              LinkedIn
+            </a>
+          </div>
+
+          <p className="mt-6 text-xs text-gray-500">
+            Built by{" "}
+            <span className="font-semibold text-emerald-300">Brad Myrick</span>.
+            Desktop terminal UI coming soon to mobile.
+          </p>
+        </div>
+      </main>
+    );
+  }
+
+  // Desktop TUI (unchanged)
   const sendKey = (key: string) => {
     handleAppKey(key);
   };
@@ -218,68 +281,16 @@ export default function Page() {
           </div>
         </div>
 
-
         <div
           ref={containerRef}
           id="terminal-container"
           className="terminal-container box-border rounded-2xl border border-green-500/80 overflow-hidden shadow-[0_0_40px_rgba(34,197,94,0.35)] bg-[#18181a]"
           style={{
-            width: isMobile ? "100%" : "1000px",
-            height: isMobile ? "60vh" : "640px",
+            width: "1000px",
+            height: "640px",
           }}
         />
 
-        {isMobile && (
-          <div className="mt-5 flex flex-col items-center gap-3">
-            <div className="grid grid-cols-3 gap-3 w-full max-w-md">
-              <button
-                className="px-4 py-2 rounded-xl bg-linear-to-br from-gray-800/90 to-gray-900/90 border border-white/10 text-gray-100 text-xs font-semibold shadow-lg shadow-black/40 active:scale-[0.97] transition-transform backdrop-blur flex flex-col items-center gap-1"
-                onClick={() => sendKey("1")}
-              >
-                <span className="text-sm leading-none">1</span>
-                <span className="text-[0.7rem] tracking-wide">Hero</span>
-              </button>
-              <button
-                className="px-4 py-2 rounded-xl bg-linear-to-br from-gray-800/90 to-gray-900/90 border border-white/10 text-gray-100 text-xs font-semibold shadow-lg shadow-black/40 active:scale-[0.97] transition-transform backdrop-blur flex flex-col items-center gap-1"
-                onClick={() => sendKey("2")}
-              >
-                <span className="text-sm leading-none">2</span>
-                <span className="text-[0.7rem] tracking-wide">Journey</span>
-              </button>
-              <button
-                className="px-4 py-2 rounded-xl bg-linear-to-br from-gray-800/90 to-gray-900/90 border border-white/10 text-gray-100 text-xs font-semibold shadow-lg shadow-black/40 active:scale-[0.97] transition-transform backdrop-blur flex flex-col items-center gap-1"
-                onClick={() => sendKey("3")}
-              >
-                <span className="text-sm leading-none">3</span>
-                <span className="text-[0.7rem] tracking-wide">Projects</span>
-              </button>
-            </div>
-
-            <div className="grid grid-cols-3 gap-3 w-full max-w-md">
-              <button
-                className="px-4 py-2 rounded-xl bg-linear-to-br from-gray-800/90 to-gray-900/90 border border-white/10 text-gray-100 text-xs font-semibold shadow-lg shadow-black/40 active:scale-[0.97] transition-transform backdrop-blur flex flex-col items-center gap-1"
-                onClick={() => sendKey("4")}
-              >
-                <span className="text-sm leading-none">4</span>
-                <span className="text-[0.7rem] tracking-wide">Skills</span>
-              </button>
-              <button
-                className="px-4 py-2 rounded-xl bg-linear-to-br from-gray-800/90 to-gray-900/90 border border-white/10 text-gray-100 text-xs font-semibold shadow-lg shadow-black/40 active:scale-[0.97] transition-transform backdrop-blur flex flex-col items-center gap-1"
-                onClick={() => sendKey("5")}
-              >
-                <span className="text-sm leading-none">5</span>
-                <span className="text-[0.7rem] tracking-wide">Contact</span>
-              </button>
-              <button
-                className="px-4 py-2 rounded-xl bg-linear-to-br from-sky-500 to-indigo-600 border border-sky-300/40 text-white text-xs font-semibold shadow-lg shadow-sky-900/40 active:scale-[0.97] transition-transform flex flex-col items-center gap-1"
-                onClick={() => sendKey("h")}
-              >
-                <span className="text-sm leading-none">?</span>
-                <span className="text-[0.7rem] tracking-wide">Help</span>
-              </button>
-            </div>
-          </div>
-        )}
       </div>
     </main>
   );
