@@ -9,13 +9,13 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "kodr.pro - Web3 Blockchain Architect & Builder",
+  title: "kodr.pro - Web3 Builder",
   description: "Software engineering leader specializing in blockchain development, smart contracts, and Web3 security. US Army veteran and commercial diver turned Web3 founder.",
   keywords: ["blockchain", "web3", "rust", "solidity", "go", "smart contracts", "layer 1", "oko blockchain"],
   authors: [{ name: "kodr.pro" }],
   openGraph: {
     title: "kodr.pro - Web3 Builder",
-    description: "Building Web3's Future | Veteran | Diver | Blockchain Architect",
+    description: "Building Web3's Future | Veteran | Diver | Blockchain",
     url: "https://kodr.pro",
     siteName: "kodr.pro",
     locale: "en_US",
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "kodr.pro - Web3 Builder",
-    description: "Building Web3's Future | Veteran | Diver | Blockchain Architect",
+    description: "Building Web3's Future | Veteran | Diver | Blockchain",
     creator: "@kodr_eth",
   },
 };

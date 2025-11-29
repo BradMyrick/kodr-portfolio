@@ -8,7 +8,6 @@ function calcTerminalSize(container: HTMLElement, fontSize: number) {
   const charWidth = fontSize * 0.575;
   const charHeight = fontSize * 1;
 
-  // Leave a 2‑cell margin on each side
   const cols = Math.max(10, Math.floor(container.offsetWidth / charWidth) - 5);
   const rows = Math.max(10, Math.floor(container.offsetHeight / charHeight) - 5);
 
@@ -24,7 +23,6 @@ export default function Page() {
   const [isMobile, setIsMobile] = useState(false);
   const [fontSize, setFontSize] = useState(22); // initial desktop
 
-  // Centralized app key handler used by terminal + window + buttons
   const handleAppKey = (key: string) => {
     if (!wasmRef.current || !termRef.current) return;
     wasmRef.current.handle_key(key);
@@ -36,7 +34,6 @@ export default function Page() {
     relink();
   };
 
-  // After each full redraw, rescan links for the current buffer
   const relink = () => {
     const term = termRef.current;
     const webLinks = webLinksRef.current;
@@ -46,7 +43,6 @@ export default function Page() {
     const lastRow = buffer.length - 1;
     if (lastRow < 0) return;
 
-    // Reach into the addon’s linkifier to rescan visible rows
     if (webLinks._linkifier && typeof webLinks._linkifier.linkifyRows === "function") {
       webLinks._linkifier.linkifyRows(0, lastRow);
     }
@@ -71,7 +67,6 @@ export default function Page() {
         const mod = await import("@/app/terminal/kodr_portfolio_terminal");
         await mod.default();
 
-        // Import WebLinksAddon only on client to avoid `self` issues on SSR
         const { WebLinksAddon } = await import("@xterm/addon-web-links");
 
         const container = containerRef.current;
