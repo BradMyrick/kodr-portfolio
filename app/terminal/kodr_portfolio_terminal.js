@@ -163,6 +163,10 @@ export function render_to_ansi() {
     }
 }
 
+export function tick() {
+    wasm.tick();
+}
+
 const EXPECTED_RESPONSE_TYPES = new Set(['basic', 'cors', 'default']);
 
 async function __wbg_load(module, imports) {

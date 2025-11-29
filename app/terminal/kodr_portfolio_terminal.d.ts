@@ -4,6 +4,7 @@ export function main(): void;
 export function init_terminal(cols: number, rows: number): void;
 export function handle_key(key: string): void;
 export function render_to_ansi(): string;
+export function tick(): void;
 
 export type InitInput = RequestInfo | URL | Response | BufferSource | WebAssembly.Module;
 
@@ -13,6 +14,7 @@ export interface InitOutput {
   readonly init_terminal: (a: number, b: number) => void;
   readonly handle_key: (a: number, b: number) => void;
   readonly render_to_ansi: (a: number) => void;
+  readonly tick: () => void;
   readonly __wbindgen_export: (a: number, b: number, c: number) => void;
   readonly __wbindgen_export2: (a: number, b: number) => number;
   readonly __wbindgen_export3: (a: number, b: number, c: number, d: number) => number;

@@ -19,6 +19,7 @@ export default function Page() {
   const termRef = useRef<Terminal | null>(null);
   const wasmRef = useRef<any>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const webLinksRef = useRef<any>(null);
 
   const [isMobile, setIsMobile] = useState(false);
   const [fontSize, setFontSize] = useState(22); // initial desktop
@@ -27,9 +28,28 @@ export default function Page() {
   const handleAppKey = (key: string) => {
     if (!wasmRef.current || !termRef.current) return;
     wasmRef.current.handle_key(key);
+
     const ansi = wasmRef.current.render_to_ansi();
     termRef.current.reset();
     termRef.current.write(ansi);
+
+    relink();
+  };
+
+  // After each full redraw, rescan links for the current buffer
+  const relink = () => {
+    const term = termRef.current;
+    const webLinks = webLinksRef.current;
+    if (!term || !webLinks) return;
+
+    const buffer = term.buffer.active;
+    const lastRow = buffer.length - 1;
+    if (lastRow < 0) return;
+
+    // Reach into the addon’s linkifier to rescan visible rows
+    if (webLinks._linkifier && typeof webLinks._linkifier.linkifyRows === "function") {
+      webLinks._linkifier.linkifyRows(0, lastRow);
+    }
   };
 
   useEffect(() => {
@@ -85,6 +105,7 @@ export default function Page() {
           window.open(uri, "_blank");
         });
         term.loadAddon(webLinksAddon);
+        webLinksRef.current = webLinksAddon;
 
         termRef.current = term;
         wasmRef.current = mod;
@@ -94,6 +115,7 @@ export default function Page() {
 
         const first = mod.render_to_ansi();
         term.write(first);
+        relink();
 
         // Route keys from xterm to WASM app
         const keyDisposable = term.onKey(({ domEvent }) => {
@@ -131,6 +153,7 @@ export default function Page() {
           const ansi = wasmRef.current.render_to_ansi();
           termRef.current.reset();
           termRef.current.write(ansi);
+          relink();
         };
 
         window.addEventListener("resize", handleResize);
@@ -140,8 +163,11 @@ export default function Page() {
           if (typeof wasmRef.current.tick === "function") {
             wasmRef.current.tick();
             const ansi = wasmRef.current.render_to_ansi();
-            termRef.current.reset();
+
+            // Clear + home via escape, then redraw frame
+            termRef.current.write("\x1b[2J\x1b[H");
             termRef.current.write(ansi);
+            relink();
           }
           setTimeout(tickLoop, 80);
         };
@@ -152,6 +178,9 @@ export default function Page() {
           window.removeEventListener("keydown", onWindowKeyDown);
           keyDisposable.dispose();
           term.dispose();
+          termRef.current = null;
+          wasmRef.current = null;
+          webLinksRef.current = null;
           mounted = false;
         };
       } catch (err) {
@@ -175,18 +204,18 @@ export default function Page() {
   };
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-gray-900 to-black p-4 sm:p-8">
+    <main className="min-h-screen bg-linear-to-b from-gray-900 to-black p-4 sm:p-8">
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col items-center justify-center mb-6">
           <div className="flex items-center gap-3">
-            <span className="text-3xl mb-[-2px]">🦀</span>
-            <h1 className="text-4xl sm:text-5xl font-extrabold text-center bg-clip-text text-transparent bg-gradient-to-r from-yellow-400 via-blue-500 to-green-400 drop-shadow-lg">
+            <span className="text-3xl -mb-0.5">🦀</span>
+            <h1 className="text-4xl sm:text-5xl font-extrabold text-center bg-clip-text text-transparent bg-linear-to-r from-yellow-400 via-blue-500 to-green-400 drop-shadow-lg">
               kodr.pro TUI
             </h1>
-            <span className="text-3xl mb-[-2px]">🌐</span>
+            <span className="text-3xl -mb-0.5">🌐</span>
           </div>
           <div className="text-lg sm:text-xl font-semibold text-gray-300 mt-2 tracking-wide text-center">
-            Rust x WebAssembly &bull; Blockchain &bull; Founder
+            Built with Rust &bull; WebAssembly
           </div>
         </div>
 
@@ -204,21 +233,21 @@ export default function Page() {
           <div className="mt-5 flex flex-col items-center gap-3">
             <div className="grid grid-cols-3 gap-3 w-full max-w-md">
               <button
-                className="px-4 py-2 rounded-xl bg-gradient-to-br from-gray-800/90 to-gray-900/90 border border-white/10 text-gray-100 text-xs font-semibold shadow-lg shadow-black/40 active:scale-[0.97] transition-transform backdrop-blur flex flex-col items-center gap-1"
+                className="px-4 py-2 rounded-xl bg-linear-to-br from-gray-800/90 to-gray-900/90 border border-white/10 text-gray-100 text-xs font-semibold shadow-lg shadow-black/40 active:scale-[0.97] transition-transform backdrop-blur flex flex-col items-center gap-1"
                 onClick={() => sendKey("1")}
               >
                 <span className="text-sm leading-none">1</span>
                 <span className="text-[0.7rem] tracking-wide">Hero</span>
               </button>
               <button
-                className="px-4 py-2 rounded-xl bg-gradient-to-br from-gray-800/90 to-gray-900/90 border border-white/10 text-gray-100 text-xs font-semibold shadow-lg shadow-black/40 active:scale-[0.97] transition-transform backdrop-blur flex flex-col items-center gap-1"
+                className="px-4 py-2 rounded-xl bg-linear-to-br from-gray-800/90 to-gray-900/90 border border-white/10 text-gray-100 text-xs font-semibold shadow-lg shadow-black/40 active:scale-[0.97] transition-transform backdrop-blur flex flex-col items-center gap-1"
                 onClick={() => sendKey("2")}
               >
                 <span className="text-sm leading-none">2</span>
                 <span className="text-[0.7rem] tracking-wide">Journey</span>
               </button>
               <button
-                className="px-4 py-2 rounded-xl bg-gradient-to-br from-gray-800/90 to-gray-900/90 border border-white/10 text-gray-100 text-xs font-semibold shadow-lg shadow-black/40 active:scale-[0.97] transition-transform backdrop-blur flex flex-col items-center gap-1"
+                className="px-4 py-2 rounded-xl bg-linear-to-br from-gray-800/90 to-gray-900/90 border border-white/10 text-gray-100 text-xs font-semibold shadow-lg shadow-black/40 active:scale-[0.97] transition-transform backdrop-blur flex flex-col items-center gap-1"
                 onClick={() => sendKey("3")}
               >
                 <span className="text-sm leading-none">3</span>
@@ -228,21 +257,21 @@ export default function Page() {
 
             <div className="grid grid-cols-3 gap-3 w-full max-w-md">
               <button
-                className="px-4 py-2 rounded-xl bg-gradient-to-br from-gray-800/90 to-gray-900/90 border border-white/10 text-gray-100 text-xs font-semibold shadow-lg shadow-black/40 active:scale-[0.97] transition-transform backdrop-blur flex flex-col items-center gap-1"
+                className="px-4 py-2 rounded-xl bg-linear-to-br from-gray-800/90 to-gray-900/90 border border-white/10 text-gray-100 text-xs font-semibold shadow-lg shadow-black/40 active:scale-[0.97] transition-transform backdrop-blur flex flex-col items-center gap-1"
                 onClick={() => sendKey("4")}
               >
                 <span className="text-sm leading-none">4</span>
                 <span className="text-[0.7rem] tracking-wide">Skills</span>
               </button>
               <button
-                className="px-4 py-2 rounded-xl bg-gradient-to-br from-gray-800/90 to-gray-900/90 border border-white/10 text-gray-100 text-xs font-semibold shadow-lg shadow-black/40 active:scale-[0.97] transition-transform backdrop-blur flex flex-col items-center gap-1"
+                className="px-4 py-2 rounded-xl bg-linear-to-br from-gray-800/90 to-gray-900/90 border border-white/10 text-gray-100 text-xs font-semibold shadow-lg shadow-black/40 active:scale-[0.97] transition-transform backdrop-blur flex flex-col items-center gap-1"
                 onClick={() => sendKey("5")}
               >
                 <span className="text-sm leading-none">5</span>
                 <span className="text-[0.7rem] tracking-wide">Contact</span>
               </button>
               <button
-                className="px-4 py-2 rounded-xl bg-gradient-to-br from-sky-500 to-indigo-600 border border-sky-300/40 text-white text-xs font-semibold shadow-lg shadow-sky-900/40 active:scale-[0.97] transition-transform flex flex-col items-center gap-1"
+                className="px-4 py-2 rounded-xl bg-linear-to-br from-sky-500 to-indigo-600 border border-sky-300/40 text-white text-xs font-semibold shadow-lg shadow-sky-900/40 active:scale-[0.97] transition-transform flex flex-col items-center gap-1"
                 onClick={() => sendKey("h")}
               >
                 <span className="text-sm leading-none">?</span>
