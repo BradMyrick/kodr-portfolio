@@ -18,7 +18,6 @@ export default function Page() {
   const termRef = useRef<Terminal | null>(null);
   const wasmRef = useRef<any>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const webLinksRef = useRef<any>(null);
 
   const [isMobile, setIsMobile] = useState(false);
   const [fontSize, setFontSize] = useState(22); // initial desktop
@@ -30,22 +29,6 @@ export default function Page() {
     const ansi = wasmRef.current.render_to_ansi();
     termRef.current.reset();
     termRef.current.write(ansi);
-
-    relink();
-  };
-
-  const relink = () => {
-    const term = termRef.current;
-    const webLinks = webLinksRef.current;
-    if (!term || !webLinks) return;
-
-    const buffer = term.buffer.active;
-    const lastRow = buffer.length - 1;
-    if (lastRow < 0) return;
-
-    if (webLinks._linkifier && typeof webLinks._linkifier.linkifyRows === "function") {
-      webLinks._linkifier.linkifyRows(0, lastRow);
-    }
   };
 
   useEffect(() => {
@@ -61,6 +44,7 @@ export default function Page() {
 
   useEffect(() => {
     let mounted = true;
+    let hoveringLink = false;
 
     const initTerminal = async () => {
       try {
@@ -96,11 +80,26 @@ export default function Page() {
           (textarea as HTMLTextAreaElement).focus();
         }
 
-        const webLinksAddon = new WebLinksAddon((event, uri) => {
-          window.open(uri, "_blank");
-        });
+        // Web links addon with hover tracking so we can pause redraws
+        const activateLink = (event: MouseEvent, uri: string) => {
+          // Let browser handle default link behavior; ensure new tab.
+          event.preventDefault();
+          window.open(uri, "_blank", "noopener,noreferrer");
+        };
+
+        const webLinksAddon = new WebLinksAddon(activateLink, {
+          // Called when mouse enters a link
+          hover: () => {
+            hoveringLink = true;
+          },
+          // Called when mouse leaves a link
+          leave: () => {
+            hoveringLink = false;
+          },
+          // Allow mailto: etc. as well as http(s)
+          allowNonHttpProtocols: true,
+        } as any);
         term.loadAddon(webLinksAddon);
-        webLinksRef.current = webLinksAddon;
 
         termRef.current = term;
         wasmRef.current = mod;
@@ -110,10 +109,10 @@ export default function Page() {
 
         const first = mod.render_to_ansi();
         term.write(first);
-        relink();
 
-        // Route keys from xterm to WASM app
+        // Route keyboard events from xterm to WASM app
         const keyDisposable = term.onKey(({ domEvent }) => {
+          if (domEvent.type !== "keydown") return;
           handleAppKey(domEvent.key);
           domEvent.preventDefault();
         });
@@ -138,7 +137,6 @@ export default function Page() {
           const { cols, rows } = calcTerminalSize(containerRef.current, fontSize);
           termRef.current.resize(cols, rows);
 
-          // Prefer a dedicated resize API if it exists, otherwise re-init
           if (typeof wasmRef.current.resize === "function") {
             wasmRef.current.resize(cols, rows);
           } else if (typeof wasmRef.current.init_terminal === "function") {
@@ -148,22 +146,22 @@ export default function Page() {
           const ansi = wasmRef.current.render_to_ansi();
           termRef.current.reset();
           termRef.current.write(ansi);
-          relink();
         };
 
         window.addEventListener("resize", handleResize);
 
         const tickLoop = () => {
           if (!mounted || !wasmRef.current || !termRef.current) return;
-          if (typeof wasmRef.current.tick === "function") {
+
+          // Skip redraw while hovering a link so clicks are not interrupted.
+          if (!hoveringLink && typeof wasmRef.current.tick === "function") {
             wasmRef.current.tick();
             const ansi = wasmRef.current.render_to_ansi();
 
-            // Clear + home via escape, then redraw frame
             termRef.current.write("\x1b[2J\x1b[H");
             termRef.current.write(ansi);
-            relink();
           }
+
           setTimeout(tickLoop, 80);
         };
         tickLoop();
@@ -175,7 +173,6 @@ export default function Page() {
           term.dispose();
           termRef.current = null;
           wasmRef.current = null;
-          webLinksRef.current = null;
           mounted = false;
         };
       } catch (err) {
@@ -211,15 +208,14 @@ export default function Page() {
           </p>
 
           <p className="text-base text-gray-200 mb-6">
-            This site is an interactive terminal UI built in Rust and compiled to WebAssembly.
-            For the full experience (keyboard navigation, animations, and links), please visit
-            on a desktop browser.
+            This site is an interactive terminal UI built in Rust and compiled to
+            WebAssembly. For the full experience (keyboard navigation, animations,
+            and links), please visit on a desktop browser.
           </p>
 
           <div className="w-full h-px bg-linear-to-r from-transparent via-emerald-500/60 to-transparent mb-6" />
 
           <div className="w-full space-y-3">
-            {/* Fix these hrefs to your real profiles */}
             <a
               href="https://github.com/bradmyrick"
               target="_blank"
@@ -229,7 +225,7 @@ export default function Page() {
               GitHub
             </a>
             <a
-              href="https://x.com/kodr_eth"
+              href="https://x.com/kodr_pro"
               target="_blank"
               rel="noreferrer"
               className="block w-full px-4 py-3 rounded-xl bg-linear-to-r from-sky-500 to-blue-600 border border-sky-300/40 text-white text-sm font-medium shadow-lg shadow-sky-900/40 active:scale-[0.97] transition-transform"
@@ -256,7 +252,7 @@ export default function Page() {
     );
   }
 
-  // Desktop TUI (unchanged)
+  // Desktop TUI
   const sendKey = (key: string) => {
     handleAppKey(key);
   };
@@ -290,7 +286,6 @@ export default function Page() {
             height: "640px",
           }}
         />
-
       </div>
     </main>
   );
